@@ -6,7 +6,7 @@ const PREVIEW = MODE === "mainnet";
 let DEV = false;
 try { DEV = new URLSearchParams(location.search).get("dev") === "1"; } catch {}
 const SEND_LOCKED = PREVIEW && !DEV;
-const PAGE_VERSION = "v48";
+const PAGE_VERSION = "v49";
 
 // ===================== config =====================
 const NETWORKS = {
@@ -1513,6 +1513,7 @@ function setLang(l) {
     if (!a.dataset.hrefEn) a.dataset.hrefEn = a.getAttribute("href");
     a.setAttribute("href", LANG === "pl" ? a.dataset.hrefPl : a.dataset.hrefEn);
   });
+  ecoInView();   // v48: tab widths change with the language (NEW / NOWE): keep the active tab in view
   $("lnEN").setAttribute("aria-pressed", LANG === "en"); $("lnPL").setAttribute("aria-pressed", LANG === "pl");
   renderEthBal(); renderNet();
   if (S.dir === "x2e") renderX1Bal();

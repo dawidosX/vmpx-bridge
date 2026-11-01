@@ -509,7 +509,7 @@ test("WP: rendered DOM - 8 sections, DRAFT badge only for EN, PDF link, tables, 
 test("WP: page wiring - visible footer link to #/wp, the view, versions v46 / style v4", () => {
   const html = fs.readFileSync(join(www, "index.html"), "utf8");
   assert.match(html, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/);
-  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=48/); assert.match(html, /style\.css\?v=5/);
+  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=49/); assert.match(html, /style\.css\?v=6/);
   assert.doesNotMatch(html, /\sstyle=|<style|<script>(?!<\/script>)/, "no inline styles or scripts");
 });
 
@@ -600,7 +600,7 @@ test("v46 footer: row, disclaimer EN/PL, bottom link row hrefs in the ANL order,
   assert.deepEqual(items, ["White Paper", "GitHub", "Security", "Powered by X1", "Part of the ANL Ecosystem", "Telegram", "X"]);
   assert.match(bar, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/); assert.doesNotMatch(bar, /wpLink"[^>]*hidden/);
   for (const a of bar.match(/<a [^>]*href="https:[^>]*>/g)) if (!/anl-protocol\.com\/"/.test(a)) assert.match(a, /target="_blank" rel="noopener"/, a);
-  assert.match(app, /const PAGE_VERSION = "v48";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
+  assert.match(app, /const PAGE_VERSION = "v49";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
   assert.doesNotMatch(foot, /\/srv|\/etc\/|\/home\/|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/, "no server paths or IPs");
 });
 test("v46: new code without innerHTML/inline styles; i18n keys of the bar and footer in EN and PL", () => {
