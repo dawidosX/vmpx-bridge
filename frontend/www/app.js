@@ -6,7 +6,7 @@ const PREVIEW = MODE === "mainnet";
 let DEV = false;
 try { DEV = new URLSearchParams(location.search).get("dev") === "1"; } catch {}
 const SEND_LOCKED = PREVIEW && !DEV;
-const PAGE_VERSION = "v47";
+const PAGE_VERSION = "v48";
 
 // ===================== config =====================
 const NETWORKS = {
@@ -139,7 +139,7 @@ const I18N = {
     risk5: "<strong>Pause.</strong> While the bridge is paused, X1 → Ethereum transfers already burned on X1 wait and are delivered after the bridge resumes.",
     addr1: "Bridge contract (Ethereum)", addr2: "Token on X1", addr3: "Bridge program (X1)",
     foot: (a, b) => `Network: ${a} ⇄ ${b}`, contact: "Security contact", tgNote: "I never DM first and will never ask for your seed phrase or private keys.",
-    ecoAria: "ANL ecosystem", ecoLogoAria: "ANL Protocol, home", ecoHome: "Home", ecoPart: "Part of the ANL ecosystem.", ecoWp: "Whitepaper", heroWp: "White Paper", heroPdf: "PDF",
+    ecoAria: "ANL ecosystem", ecoLogoAria: "ANL Protocol, home", ecoHome: "Home", ecoPart: "Part of the ANL ecosystem.", ecoWp: "Whitepaper", ecoNew: "NEW", heroWp: "White Paper", heroPdf: "PDF",
     ecoSec: "Security", ecoPowered: "Powered by X1", ecoPartLink: "Part of the ANL Ecosystem",
     ctrH: "On-chain contracts", ctrNetAria: "Contracts: network", ctrRouter: "Bridge router (lockbox)", ctrMint: "VMPXe mint",
     disc: "VMPX Bridge is not an investment offer, financial advice or a financial instrument. It is an independent community project, not affiliated with X1 Labs. The code is reviewed with AI tools, without a paid external audit. The bridge currently runs on testnet; testnet tokens have no value. On-chain values can be verified independently. DYOR.",
@@ -280,7 +280,7 @@ const I18N = {
     risk5: "<strong>Pauza.</strong> W czasie pauzy transfery X1 → Ethereum spalone na X1 czekają i zostaną dostarczone po wznowieniu.",
     addr1: "Kontrakt mostu (Ethereum)", addr2: "Token na X1", addr3: "Program mostu (X1)",
     foot: (a, b) => `Sieć: ${a} ⇄ ${b}`, contact: "Kontakt w sprawie bezpieczeństwa", tgNote: "Nigdy nie piszę pierwszy i nigdy nie poproszę o seed phrase ani klucze prywatne.",
-    ecoAria: "Ekosystem ANL", ecoLogoAria: "ANL Protocol, strona główna", ecoHome: "Start", ecoPart: "Część ekosystemu ANL.", ecoWp: "Whitepaper", heroWp: "White Paper", heroPdf: "PDF",
+    ecoAria: "Ekosystem ANL", ecoLogoAria: "ANL Protocol, strona główna", ecoHome: "Start", ecoPart: "Część ekosystemu ANL.", ecoWp: "Whitepaper", ecoNew: "NOWE", heroWp: "White Paper", heroPdf: "PDF",
     ecoSec: "Bezpieczeństwo", ecoPowered: "Powered by X1", ecoPartLink: "Part of the ANL Ecosystem",
     ctrH: "Kontrakty on-chain", ctrNetAria: "Kontrakty: sieć", ctrRouter: "Router mostu (lockbox)", ctrMint: "Mint VMPXe",
     disc: "VMPX Bridge nie jest ofertą inwestycyjną, doradztwem finansowym ani instrumentem finansowym. To niezależny projekt społeczności, niepowiązany z X1 Labs. Kod jest przeglądany narzędziami AI, bez płatnego audytu zewnętrznego. Most działa obecnie na testnecie; tokeny testowe nie mają wartości. Wartości on-chain możesz zweryfikować samodzielnie. DYOR.",
@@ -1571,7 +1571,8 @@ $("ctrMain").onclick = () => setCtrNet(true);
 // ecosystem bar on a narrow screen: scroll the tab row so the current page (VMPX Bridge) is visible
 function ecoInView() {
   const row = $("ecoTabs"), on = row && row.querySelector(".ecotab.on");
-  if (on && on.offsetLeft + on.offsetWidth > row.scrollLeft + row.clientWidth) row.scrollLeft = on.offsetLeft + on.offsetWidth - row.clientWidth;
+  // v48: the active pill (icon + NEW badge) is wider: centre it in the row, so it is fully visible whenever it fits
+  if (on && (on.offsetLeft < row.scrollLeft || on.offsetLeft + on.offsetWidth > row.scrollLeft + row.clientWidth)) row.scrollLeft = Math.max(0, on.offsetLeft - Math.max(0, (row.clientWidth - on.offsetWidth) / 2));
   ecoEdge();
 }
 // the fade on the right edge hints at more tabs; gone once the row is scrolled to its end

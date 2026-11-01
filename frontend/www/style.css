@@ -395,3 +395,11 @@ details#x1send summary{cursor:pointer;font-weight:700;font-size:17px}
 .wppdf{color:var(--anl-steel);font-size:14px;text-decoration:underline;text-underline-offset:3px}
 .wppdf:hover{color:var(--anl-gold2)}
 .ecotab.t-wp i{background:var(--anl-gold)}
+
+/* v48: active "VMPX Bridge" tab like on x1watch.xyz (.anl-tab--bridge): tide pill, tide text and dot, arrow-left-right icon, NEW badge */
+.ecotab.t-vmpx{color:var(--tide);border:1px solid color-mix(in srgb,var(--tide) 55%,transparent);border-radius:999px;padding:.375rem .75rem .375rem .625rem;gap:.5rem;background:transparent}
+.ecotab.t-vmpx.on{color:var(--tide);background:transparent;box-shadow:none;font-weight:500}
+.ecotab.t-vmpx i{background:var(--tide);opacity:1;width:6px;height:6px}
+.ecotab.t-vmpx:hover{color:var(--tide);background:color-mix(in srgb,var(--tide) 12%,transparent);border-color:color-mix(in srgb,var(--tide) 85%,transparent)}
+.ecoico{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ecobadge{letter-spacing:.06em;background:var(--tide);color:#03201c;border-radius:999px;margin-left:2px;padding:1px 5.6px;font-size:9px;font-weight:700;line-height:1.2}

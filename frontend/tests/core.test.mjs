@@ -509,7 +509,7 @@ test("WP: rendered DOM - 8 sections, DRAFT badge only for EN, PDF link, tables, 
 test("WP: page wiring - visible footer link to #/wp, the view, versions v46 / style v4", () => {
   const html = fs.readFileSync(join(www, "index.html"), "utf8");
   assert.match(html, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/);
-  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=47/); assert.match(html, /style\.css\?v=4/);
+  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=48/); assert.match(html, /style\.css\?v=5/);
   assert.doesNotMatch(html, /\sstyle=|<style|<script>(?!<\/script>)/, "no inline styles or scripts");
 });
 
@@ -552,7 +552,7 @@ test("v46 eco bar: above the bridge header, ANL logo -> ANL home, links in the A
   assert.match(bar, /<a class="ecologo" href="https:\/\/anl-protocol\.com\/"[^>]*>.*<b>ANL PROTOCOL<\/b><\/a>/s);
   const tabs = between(bar, '<div class="ecotabs"', "</div>");
   assert.deepEqual(hrefs(tabs), ["https://anl-protocol.com/", "https://anl-protocol.com/nft.html", "https://x1watch.xyz/", "#/", "#/wp"]);
-  const names = [...tabs.matchAll(/<a\b[^>]*>(.*?)<\/a>/gs)].map((m) => m[1].replace(/<[^>]+>/g, "").trim());
+  const names = [...tabs.matchAll(/<a\b[^>]*>(.*?)<\/a>/gs)].map((m) => m[1].replace(/<span class="ecobadge"[^>]*>.*?<\/span>/g, "").replace(/<[^>]+>/g, "").trim());
   assert.deepEqual(names, ["Home", "NFT Marketplace", "x1watch", "VMPX Bridge", "Whitepaper"]);
   const active = [...tabs.matchAll(/<a\b[^>]*>/g)].map((m) => m[0]).filter((a) => /aria-current="page"/.test(a));
   assert.equal(active.length, 1); assert.match(active[0], /class="ecotab t-vmpx on"/); assert.match(active[0], /href="#\/"/);
@@ -600,7 +600,7 @@ test("v46 footer: row, disclaimer EN/PL, bottom link row hrefs in the ANL order,
   assert.deepEqual(items, ["White Paper", "GitHub", "Security", "Powered by X1", "Part of the ANL Ecosystem", "Telegram", "X"]);
   assert.match(bar, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/); assert.doesNotMatch(bar, /wpLink"[^>]*hidden/);
   for (const a of bar.match(/<a [^>]*href="https:[^>]*>/g)) if (!/anl-protocol\.com\/"/.test(a)) assert.match(a, /target="_blank" rel="noopener"/, a);
-  assert.match(app, /const PAGE_VERSION = "v47";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
+  assert.match(app, /const PAGE_VERSION = "v48";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
   assert.doesNotMatch(foot, /\/srv|\/etc\/|\/home\/|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/, "no server paths or IPs");
 });
 test("v46: new code without innerHTML/inline styles; i18n keys of the bar and footer in EN and PL", () => {
@@ -634,4 +634,16 @@ test("v47: view changes keep the ANL bar and header on screen (no plain scrollTo
   assert.doesNotMatch(app, /window\.scrollTo\(0, 0\)/, "no unconditional scroll to 0 left");
   for (const v of ["WP.show(focus)).then(() => { if (focus) revealAfterRender(); })", "STATS.show(r, focus)).then(() => { if (focus) revealAfterRender(); })", "loadTx(false).then(() => { if (focus) revealAfterRender(); })"]) assert.ok(app.includes(v), v);
   assert.ok(app.includes("if (!revealWanted || userScrollAt > routeAt) return;"), "a user scroll after the route change wins");
+});
+
+test("v48: active VMPX Bridge tab styled like x1watch.xyz (tide pill, dot, arrow-left-right icon, NEW/NOWE badge)", () => {
+  const html = fs.readFileSync(new URL("../www/index.html", import.meta.url), "utf8");
+  const css = fs.readFileSync(new URL("../www/style.css", import.meta.url), "utf8");
+  const app = fs.readFileSync(new URL("../www/app.js", import.meta.url), "utf8");
+  assert.match(html, /<a class="ecotab t-vmpx on" href="#\/" aria-current="page"><i aria-hidden="true"><\/i><svg class="ecoico" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"\/><path d="M4 7h16"\/><path d="m16 21 4-4-4-4"\/><path d="M20 17H4"\/><\/svg>VMPX Bridge<span class="ecobadge" data-i18n="ecoNew">NEW<\/span><\/a>/);
+  assert.match(css, /\.ecotab\.t-vmpx\{color:var\(--tide\);border:1px solid color-mix\(in srgb,var\(--tide\) 55%,transparent\);border-radius:999px;padding:\.375rem \.75rem \.375rem \.625rem/);
+  assert.match(css, /\.ecobadge\{letter-spacing:\.06em;background:var\(--tide\);color:#03201c;border-radius:999px;[^}]*font-size:9px;font-weight:700/);
+  assert.match(css, /--tide:#58D3C4/i);
+  assert.match(app, /ecoNew: "NEW"/); assert.match(app, /ecoNew: "NOWE"/);
+  assert.doesNotMatch(html, /style=/);
 });
