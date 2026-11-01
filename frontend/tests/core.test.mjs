@@ -470,7 +470,7 @@ test("WP: the renderer builds DOM with createElement/textContent only (no innerH
   const app = fs.readFileSync(join(www, "app.js"), "utf8");
   const wpPart = app.slice(app.indexOf("if (wp) {"), app.indexOf("if (stats) {"));
   assert.ok(wpPart.length > 20 && !/innerHTML/.test(wpPart), "the #/wp branch in app.js does not use innerHTML");
-  assert.match(app, /loadScript\("wp\.js\?v=2"\)/); assert.match(app, /loadScript\("stats\.js\?v=8"\)/);
+  assert.match(app, /loadScript\("wp\.js\?v=2"\)/); assert.match(app, /loadScript\("stats\.js\?v=9"\)/);
 });
 
 // a tiny DOM (only what wp.js uses) to render the JSON as the browser would
@@ -509,7 +509,7 @@ test("WP: rendered DOM - 8 sections, DRAFT badge only for EN, PDF link, tables, 
 test("WP: page wiring - visible footer link to #/wp, the view, versions v46 / style v4", () => {
   const html = fs.readFileSync(join(www, "index.html"), "utf8");
   assert.match(html, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/);
-  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=46/); assert.match(html, /style\.css\?v=4/);
+  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=47/); assert.match(html, /style\.css\?v=4/);
   assert.doesNotMatch(html, /\sstyle=|<style|<script>(?!<\/script>)/, "no inline styles or scripts");
 });
 
@@ -600,7 +600,7 @@ test("v46 footer: row, disclaimer EN/PL, bottom link row hrefs in the ANL order,
   assert.deepEqual(items, ["White Paper", "GitHub", "Security", "Powered by X1", "Part of the ANL Ecosystem", "Telegram", "X"]);
   assert.match(bar, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/); assert.doesNotMatch(bar, /wpLink"[^>]*hidden/);
   for (const a of bar.match(/<a [^>]*href="https:[^>]*>/g)) if (!/anl-protocol\.com\/"/.test(a)) assert.match(a, /target="_blank" rel="noopener"/, a);
-  assert.match(app, /const PAGE_VERSION = "v46";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
+  assert.match(app, /const PAGE_VERSION = "v47";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
   assert.doesNotMatch(foot, /\/srv|\/etc\/|\/home\/|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/, "no server paths or IPs");
 });
 test("v46: new code without innerHTML/inline styles; i18n keys of the bar and footer in EN and PL", () => {
@@ -625,4 +625,13 @@ test("v46: hero White Paper button → #/wp and PDF link by language; eco bar Wh
   assert.ok(html.indexOf('id="heroCta"') > html.indexOf('data-i18n="lede"'), "buttons right under the lede");
   const app = fs.readFileSync(new URL("../www/app.js", import.meta.url), "utf8");
   for (const k of ["heroWp", "heroPdf", "ecoWp"]) assert.equal((app.match(new RegExp(`\\b${k}:`, "g")) || []).length, 2, k);
+});
+
+test("v47: view changes keep the ANL bar and header on screen (no plain scrollTo(0,0), manual scroll restoration, re-check after async render)", () => {
+  const app = fs.readFileSync(new URL("../www/app.js", import.meta.url), "utf8");
+  assert.match(app, /history\.scrollRestoration = "manual"/);
+  assert.match(app, /revealWanted = window\.scrollY > barKeepY\(\)/); assert.match(app, /window\.scrollTo\(\{ top: 0, left: 0, behavior: "instant" \}\)/);
+  assert.doesNotMatch(app, /window\.scrollTo\(0, 0\)/, "no unconditional scroll to 0 left");
+  for (const v of ["WP.show(focus)).then(() => { if (focus) revealAfterRender(); })", "STATS.show(r, focus)).then(() => { if (focus) revealAfterRender(); })", "loadTx(false).then(() => { if (focus) revealAfterRender(); })"]) assert.ok(app.includes(v), v);
+  assert.ok(app.includes("if (!revealWanted || userScrollAt > routeAt) return;"), "a user scroll after the route change wins");
 });

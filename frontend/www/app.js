@@ -6,7 +6,7 @@ const PREVIEW = MODE === "mainnet";
 let DEV = false;
 try { DEV = new URLSearchParams(location.search).get("dev") === "1"; } catch {}
 const SEND_LOCKED = PREVIEW && !DEV;
-const PAGE_VERSION = "v46";
+const PAGE_VERSION = "v47";
 
 // ===================== config =====================
 const NETWORKS = {
@@ -1362,8 +1362,27 @@ function scheduleTx() {
   if (r.view === "detail" && TX.data && TX.data.items[0] && TX.data.items[0].status !== "delivered") TX.timer = setTimeout(() => loadTx(true), 15000);
   else if (r.view === "list" && r.page === 1) TX.timer = setTimeout(() => loadTx(true), 30000);
 }
+// v47: a view change (tab, link #/tx, #/stats, #/wp, White Paper button, paging, filters, search) never leaves the ANL bar
+// and the wallet header off screen. A position above the tabs is kept; below the tabs the page goes back to the very
+// top, instantly, and is checked again after the view's asynchronous content has rendered, unless the user has scrolled
+// in the meantime. The browser's own scroll restoration is off: hash routes are handled here.
+try { history.scrollRestoration = "manual"; } catch {}
+let userScrollAt = 0, routeAt = 0, revealWanted = false;
+["wheel", "touchmove", "keydown"].forEach((ev) => addEventListener(ev, () => { userScrollAt = Date.now(); }, { passive: true }));
+// A position is kept only while the ANL bar is still fully on screen (it is the first element of the page, so in
+// practice: the very top). Anything lower — inside the header or below the tabs — goes back to the top, so that the ANL
+// bar, the wallet header and the tabs are visible after every view change (owner, 1 Nov 2026).
+function barKeepY() { const b = $("ecoBar"); return b ? Math.max(0, Math.round(b.getBoundingClientRect().top + window.scrollY)) : 0; }
+// The decision is taken from the position BEFORE the view changes: a shorter new view makes the browser clamp the
+// scroll position to its new maximum, which can land just above the tabs with the ANL bar and the header still hidden.
+function revealTop() {
+  if (!revealWanted || userScrollAt > routeAt) return;
+  if (window.scrollY !== 0) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+}
+function revealAfterRender() { revealTop(); requestAnimationFrame(() => requestAnimationFrame(revealTop)); }
 function onRoute(focus) {
   const r = parseRoute(); TX.route = r;
+  if (focus) { routeAt = Date.now(); revealWanted = window.scrollY > barKeepY(); revealTop(); }
   const stats = r.view === "stats", wp = r.view === "wp", tx = r.view !== "bridge" && !stats && !wp;
   $("viewBridge").classList.toggle("hidden", tx || stats || wp); $("viewTx").classList.toggle("hidden", !tx); $("viewStats").classList.toggle("hidden", !stats);
   $("viewWp").classList.toggle("hidden", !wp);
@@ -1372,24 +1391,22 @@ function onRoute(focus) {
   clearTimeout(TX.timer);
   if (!wp && window.WP) window.WP.hide();
   if (wp) {   // the White Paper lives in wp.js, loaded on first use; DOM built with createElement/textContent only
-    if (focus) window.scrollTo(0, 0);
-    (window.__wpLib ||= loadScript("wp.js?v=2")).then(() => window.WP.show(focus)).catch(() => { $("wpBody").textContent = t("wpErr"); });
+    (window.__wpLib ||= loadScript("wp.js?v=2")).then(() => window.WP.show(focus)).then(() => { if (focus) revealAfterRender(); }).catch(() => { $("wpBody").textContent = t("wpErr"); });
     return;
   }
   if (stats) {   // the Statistics tab lives in stats.js, loaded on first use
-    (window.__statsLib ||= loadScript("stats.js?v=8")).then(() => window.STATS.show(r, focus)).catch(() => { $("stBody").textContent = t("txErr"); });
-    if (focus) window.scrollTo(0, 0);
+    (window.__statsLib ||= loadScript("stats.js?v=9")).then(() => window.STATS.show(r, focus)).then(() => { if (focus) revealAfterRender(); }).catch(() => { $("stBody").textContent = t("txErr"); });
     return;
   }
   if (!tx) {
     if (location.hash === "#/tokens") setTimeout(() => $("tokens").scrollIntoView({ block: "start" }), 0);
-    else if (focus) window.scrollTo(0, 0);
+    else if (focus) revealAfterRender();
     return;
   }
   if (r.view === "list") try { localStorage.setItem("vmpx-tx-filters", JSON.stringify({ dir: r.dir, bot: r.bot })); } catch {}
   $("txQ").value = r.view === "search" ? r.q : ""; $("txHint").textContent = ""; $("txHint").className = "hint";
-  loadTx(false);
-  if (focus) { window.scrollTo(0, 0); $("txH").focus({ preventScroll: true }); }
+  loadTx(false).then(() => { if (focus) revealAfterRender(); }).catch(() => {});
+  if (focus) { revealAfterRender(); $("txH").focus({ preventScroll: true }); }
 }
 const chainOf = (a) => (a && a.startsWith("0x") ? "Ethereum" : "X1");
 const amtOf = (i, max) => (/^\d+$/.test(String(i.amount)) ? fmt(BigInt(i.amount), 18, max) : "?") + " " + (i.dir === "e2x" ? NET.symEth : NET.symX1);

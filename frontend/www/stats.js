@@ -86,6 +86,9 @@
       const [d, l, all] = await Promise.all([get(`/api/stats/daily?days=30&bot=${ST.route.bot}`), get("/api/stats/limits"),
         ST.route.bot === "all" ? null : get("/api/stats/daily?days=1&bot=all")]);   // the limit counts every withdrawal, whatever the filter
       if (seq !== ST.seq) return;
+      // v47: an answer of an unexpected shape is an error, never half-assigned state that makes render() throw
+      const okDaily = (x) => !!(x && typeof x === "object" && x.last24h && typeof x.last24h === "object" && Array.isArray(x.days));
+      if (!okDaily(d) || (all && !okDaily(all)) || !l || typeof l !== "object") throw "txErr";
       ST.daily = d; ST.limits = l; ST.out24all = (all || d).last24h.out; ST.err = null;
     } catch (e) { if (seq === ST.seq) ST.err = e === 429 ? "txBusy" : "txErr"; }
     render();
