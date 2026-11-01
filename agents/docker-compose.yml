@@ -1,0 +1,27 @@
+# Example for ONE validator server + optional relayer. Pin image by digest (agents-v3.0.0 / f556e18).
+services:
+  validator-x1:
+    image: gcr.io/abacus-labs-dev/hyperlane-agent@sha256:__PIN_DIGEST__
+    command: ["./validator"]
+    env_file: validator.x1.env
+    volumes: ["./registry:/registry:ro", "validator-db:/data"]
+    environment: { HYP_REGISTRY: /registry }   # private registry incl. svm/registry/chains/x1
+    restart: unless-stopped
+    network_mode: host
+  relayer:
+    profiles: ["relayer"]
+    image: gcr.io/abacus-labs-dev/hyperlane-agent@sha256:__PIN_DIGEST__
+    command: ["./relayer"]
+    env_file: relayer.env
+    volumes: ["./registry:/registry:ro", "relayer-db:/data"]
+    environment: { HYP_REGISTRY: /registry }
+    restart: unless-stopped
+  monitor:
+    profiles: ["relayer"]
+    image: node:22-alpine
+    working_dir: /app
+    command: ["node", "src/monitor.mjs"]
+    volumes: ["../monitoring:/app:ro"]
+    env_file: monitor.env
+    ports: ["9465:9465"]
+volumes: { validator-db: {}, relayer-db: {} }

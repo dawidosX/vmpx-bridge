@@ -1,0 +1,39 @@
+'forge clean' running (wd: <repo>/evm)
+'forge config --json' running
+'forge build --build-info --deny never --skip ./test/** ./script/** --force' running (wd: <repo>/evm)
+
+Detector: timestamp
+VmpxEthFeeHook.feeFor(uint256) (src/VmpxEthFeeHook.sol#182-191) uses timestamp for comparisons
+	Dangerous comparisons:
+	- stale = block.timestamp > priceUpdatedAt + p.maxPriceAge (src/VmpxEthFeeHook.sol#184)
+VmpxEthFeeHook.executeParams() (src/VmpxEthFeeHook.sol#202-209) uses timestamp for comparisons
+	Dangerous comparisons:
+	- pendingParamsEta == 0 || block.timestamp < pendingParamsEta (src/VmpxEthFeeHook.sol#203)
+	- block.timestamp > pendingParamsEta + EXECUTION_GRACE (src/VmpxEthFeeHook.sol#204)
+VmpxEthFeeHook.updatePrice(uint256) (src/VmpxEthFeeHook.sol#232-249) uses timestamp for comparisons
+	Dangerous comparisons:
+	- block.timestamp < priceUpdatedAt + MIN_PRICE_UPDATE_INTERVAL (src/VmpxEthFeeHook.sol#234)
+	- block.timestamp >= windowStart + 86400 (src/VmpxEthFeeHook.sol#239)
+VmpxEthFeeHook.executePriceReset() (src/VmpxEthFeeHook.sol#270-281) uses timestamp for comparisons
+	Dangerous comparisons:
+	- pendingPriceResetEta == 0 || block.timestamp < pendingPriceResetEta (src/VmpxEthFeeHook.sol#271)
+	- block.timestamp > pendingPriceResetEta + EXECUTION_GRACE (src/VmpxEthFeeHook.sol#272)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+
+Detector: solc-version
+Version constraint 0.8.22 contains known severe issues (https://solidity.readthedocs.io/en/latest/bugs.html)
+	- VerbatimInvalidDeduplication.
+It is used by:
+	- 0.8.22 (src/VmpxCollateralRouter.sol#2)
+	- 0.8.22 (src/VmpxEthFeeHook.sol#2)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
+
+Detector: naming-convention
+Variable VmpxEthFeeHook.MAX_FEE_BPS (src/VmpxEthFeeHook.sol#51) is not in mixedCase
+Variable VmpxEthFeeHook.MAX_FEE_CAP_WEI (src/VmpxEthFeeHook.sol#52) is not in mixedCase
+Variable VmpxEthFeeHook.PARAM_DELAY (src/VmpxEthFeeHook.sol#53) is not in mixedCase
+Variable VmpxEthFeeHook.MAX_PRICE_CHANGE_BPS (src/VmpxEthFeeHook.sol#54) is not in mixedCase
+Variable VmpxEthFeeHook.MIN_PRICE_UPDATE_INTERVAL (src/VmpxEthFeeHook.sol#55) is not in mixedCase
+Variable VmpxEthFeeHook.MAX_DAILY_PRICE_CHANGE_BPS (src/VmpxEthFeeHook.sol#56) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+. analyzed (56 contracts with 102 detectors), 11 result(s) found

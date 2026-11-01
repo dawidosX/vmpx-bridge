@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07111F">
+<title>VMPX Bridge · Ethereum ⇄ X1 · x1watch</title>
+<meta name="description" content="Move VMPX between Ethereum and X1. 1:1 backing visible live.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1">
+<link rel="stylesheet" href="style.css?v=4">
+<body>
+<nav class="eco" id="ecoBar" data-i18n-aria="ecoAria">
+  <div class="wrap eco-in">
+    <a class="ecologo" href="https://anl-protocol.com/" data-href-pl="https://anl-protocol.com/pl/index.html" data-i18n-aria="ecoLogoAria"><svg viewBox="0 0 32 28" aria-hidden="true"><path d="M16 1 L30.5 27 H24.6 L16 11.6 L7.4 27 H1.5 Z" fill="#FFB11A"/><path d="M16 15.2 L22.6 27 H17.9 L16 23.4 L14.1 27 H9.4 Z" fill="#FFB11A"/></svg><b>ANL PROTOCOL</b></a>
+    <div class="ecotabs" id="ecoTabs">
+      <a class="ecotab t-home" href="https://anl-protocol.com/" data-href-pl="https://anl-protocol.com/pl/index.html"><i aria-hidden="true"></i><span data-i18n="ecoHome">Home</span></a>
+      <a class="ecotab t-nft" href="https://anl-protocol.com/nft.html" data-href-pl="https://anl-protocol.com/pl/nft.html"><i aria-hidden="true"></i>NFT Marketplace</a>
+      <a class="ecotab t-x1w" href="https://x1watch.xyz/"><i aria-hidden="true"></i>x1watch</a>
+      <a class="ecotab t-vmpx on" href="#/" aria-current="page"><i aria-hidden="true"></i>VMPX Bridge</a>
+      <a class="ecotab t-wp" id="ecoWp" href="#/wp"><i aria-hidden="true"></i><span data-i18n="ecoWp">Whitepaper</span></a>
+    </div>
+    <span class="netstat"><span class="live" aria-hidden="true"></span>X1 Network</span>
+  </div>
+</nav>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#/" data-i18n-aria="brandAria"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="x1wGrad" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFB11A"/><stop offset="1" stop-color="#E08A00"/></linearGradient></defs><g stroke="url(#x1wGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="13"/><circle cx="16" cy="16" r="5.25"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="16" y1="25" x2="16" y2="29"/><line x1="3" y1="16" x2="7" y2="16"/><line x1="25" y1="16" x2="29" y2="16"/></g><circle cx="16" cy="16" r="2" fill="url(#x1wGrad)"/></svg><span class="bw"><span class="wm"><i>x1</i><em>watch</em></span><span class="sub"><span data-i18n="brandSub">VMPX Bridge</span><span class="by"> · by ANL Protocol</span></span></span></a>
+    <span class="bstat hidden" id="bStat" tabindex="0" role="status"><i aria-hidden="true"></i><span id="bStatTxt"></span></span>
+    <div class="net" role="group" data-i18n-aria="netAria">
+      <button type="button" id="netTest" aria-pressed="true">Testnet</button>
+      <button type="button" id="netMain" aria-pressed="false" disabled data-i18n-title="mainTitle">Mainnet</button>
+    </div>
+    <div class="net lang" role="group" aria-label="Language / Język">
+      <button type="button" id="lnEN" lang="en" aria-pressed="true">EN</button>
+      <button type="button" id="lnPL" lang="pl" aria-pressed="false">PL</button>
+    </div>
+    <span class="wpill" id="walletPill"><button type="button" class="wallet" id="wallet" data-i18n="connect">Connect wallet</button><button type="button" class="wx hidden" id="walletX" data-i18n-title="disconnect" data-i18n-aria="disconnect">×</button></span>
+    <span class="wpill x1p" id="wallet1Pill"><button type="button" class="wallet x1w" id="wallet1" data-i18n="connectX1">Connect X1 wallet</button><button type="button" class="wx hidden" id="wallet1X" data-i18n-title="disconnect" data-i18n-aria="disconnect">×</button></span>
+    <button type="button" class="wallet x1w anyw" id="walletAny" data-i18n="connectAny">Connect</button>
+  </header>
+
+  <div class="card picker hidden" id="x1pick" role="dialog" aria-labelledby="x1pickH">
+    <div class="pickhead"><h2 id="x1pickH">Choose an X1 wallet</h2><button type="button" class="copy" id="x1pickClose" data-i18n="x1Close">Close</button></div>
+    <ul id="x1pickList"></ul>
+    <p class="hint err" id="x1pickMsg" aria-live="polite"></p>
+    <p class="muted small" id="x1pickNote"></p>
+  </div>
+
+  <p class="bnote hidden" id="bNote" role="note"></p>
+  <p class="notice" role="note" data-i18n-html="notice"></p>
+
+  <nav class="tabs" data-i18n-aria="tabsAria">
+    <a href="#/" id="tabBridge" aria-current="page" data-i18n="tabBridge">Bridge</a>
+    <a href="#/tx" id="tabTx" aria-current="false" data-i18n="tabTx">Transactions</a>
+    <a href="#/stats" id="tabStats" aria-current="false" data-i18n="tabStats">Statistics</a>
+  </nav>
+
+  <div id="viewBridge">
+  <main class="hero">
+    <div>
+      <h1 data-i18n="h1">Move VMPX to X1 and back.</h1>
+      <p class="lede" data-i18n="lede"></p>
+      <div class="herocta" id="heroCta">
+        <a class="wpbtn" id="heroWp" href="#/wp" data-i18n="heroWp">White Paper</a>
+        <a class="wppdf" id="heroPdf" href="wp/VMPX-Bridge-WP-EN.pdf" data-href-pl="wp/VMPX-Bridge-WP-PL.pdf" target="_blank" rel="noopener" data-i18n="heroPdf">PDF</a>
+      </div>
+
+      <div class="stats" id="stats" aria-live="polite">
+        <div class="stat full"><strong id="stSupply" class="num">—</strong><small data-i18n="statSupply">Total supply</small></div>
+        <div class="stat"><strong id="stLock" class="num">—</strong><small data-i18n="statLock">In the bridge</small></div>
+        <div class="stat"><strong id="stEth" class="num">—</strong><small data-i18n="statEth">Outside the bridge</small></div>
+        <div class="stat big"><strong id="stX1" class="num">—</strong><small data-i18n="statX1">VMPXe on X1</small></div>
+        <div class="stat"><strong id="stPct" class="num">—</strong><small data-i18n="statPct">Bridged to X1</small></div>
+        <div class="stat"><strong id="stTotal" class="num">—</strong><small data-i18n="statTotal">Transfers</small></div>
+        <div class="stat"><strong id="st24" class="num">—</strong><small data-i18n="stat24">Last 24 hours</small></div>
+        <div class="stat"><strong id="stE2X" class="num">—</strong><small data-i18n="statE2X">Ethereum → X1</small></div>
+        <div class="stat"><strong id="stX2E" class="num">—</strong><small data-i18n="statX2E">X1 → Ethereum</small></div>
+        <div class="stat wide"><strong id="stFees" class="num">—</strong><small data-i18n="statFees">Fees collected</small><small id="stFees24"></small></div>
+      </div>
+      <p class="statnote" data-i18n="statNote"></p>
+
+      <form class="card" id="form" novalidate>
+        <p class="pausemsg hidden" id="pauseMsg" role="alert"></p>
+        <div class="netbar hidden" id="chainBar" role="alert"><span id="chainBarMsg"></span><button type="button" class="copy" id="chainBarBtn"></button></div>
+        <div class="netbar hidden" id="rpcBar" role="status"><span id="rpcBarMsg"></span><button type="button" class="copy" id="rpcBarBtn"></button></div>
+        <div class="netbar hidden" id="opBar" role="alert"><span id="opBarMsg"></span><span><button type="button" class="copy" id="opCheckBtn"></button><button type="button" class="copy hidden" id="opClearBtn"></button></span></div>
+        <div class="dir">
+          <div class="chain eth" id="fromBox"><small data-i18n="from">From</small><strong id="fromName">Ethereum</strong></div>
+          <button type="button" class="swap" id="swap" data-i18n-aria="swapAria">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg>
+          </button>
+          <div class="chain x1" id="toBox"><small data-i18n="to">To</small><strong id="toName">X1</strong></div>
+        </div>
+
+        <div class="field">
+          <label for="amt"><span data-i18n="amount">Amount</span><button type="button" id="maxBtn"><span data-i18n="balance">Balance</span>: <span id="bal" class="num">—</span></button></label>
+          <div class="amount"><input id="amt" size="4" inputmode="decimal" autocomplete="off" placeholder="0" aria-describedby="amtHint"><span id="amtSym">VMPX</span></div>
+          <div class="hint" id="amtHint" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="rcpt"><span id="rcptLabel"></span><button type="button" id="selfBtn" class="hidden" data-i18n="myAddr">My address</button></label>
+          <input class="addr" id="rcpt" autocomplete="off" spellcheck="false" aria-describedby="rcptHint">
+          <div class="hint" id="rcptHint" aria-live="polite"></div>
+        </div>
+
+        <ul class="costs" id="costs" aria-live="polite">
+          <li><span data-i18n="youGet">You receive</span><span class="num" id="cGet">—</span></li>
+          <li class="hidden" id="cVmpxRow"><span id="cVmpxLbl"></span><span class="num" id="cVmpx">—</span></li>
+          <li class="hidden" id="cProtoRow"><span data-i18n="feeX1Bridge">Bridge fee (XNT)</span><span class="num" id="cProto">—</span></li>
+          <li><span id="cFeeLbl"></span><span class="num" id="cFee">—</span></li>
+          <li><span id="cGasLbl"></span><span class="num" id="cGas"></span></li>
+          <li class="sum"><span data-i18n="cNet">Network</span><span id="cNet">—</span></li>
+          <li class="sum"><span data-i18n="cTo">Recipient</span><span class="num" id="cTo">—</span></li>
+          <li class="sum"><span data-i18n="cContract">Contract</span><span class="num" id="cContract">—</span></li>
+          <li class="total"><span data-i18n="total">Deducted from your balance</span><span class="num" id="cTotal">—</span></li>
+        </ul>
+
+        <button class="go" id="go" disabled data-i18n="connect">Connect wallet</button>
+        <p class="time" id="timeNote"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span id="timeText"></span></p>
+
+        <div class="track hidden" id="track" aria-live="polite"><ol id="steps"></ol></div>
+      </form>
+
+      <details class="card hidden u-mt18" id="x1send">
+        <summary data-i18n="x1sendH"></summary>
+        <p class="u-mist u-my12" data-i18n="x1sendP"></p>
+        <div class="cli" id="cli"></div>
+      </details>
+
+      <section class="card tokens" id="tokens" aria-labelledby="tokH">
+        <h3 id="tokH" data-i18n="tokH">Test tokens</h3>
+        <p class="tokwarn" data-i18n-html="tokWarn"></p>
+        <div class="tok">
+          <div class="tokhead"><b>VMPX (test)</b><span class="muted small">Sepolia · ERC-20 · decimals 18</span></div>
+          <code>0xCC0c84755384b041470C021D338639EDa8831E09</code>
+          <div class="tokbtns">
+            <button type="button" class="copy" data-copy="0xCC0c84755384b041470C021D338639EDa8831E09" data-i18n="copy">Copy</button>
+            <button type="button" class="copy" id="watchBtn" data-i18n="tokWatch">Add to MetaMask</button>
+            <a class="copy" href="https://sepolia.etherscan.io/token/0xCC0c84755384b041470C021D338639EDa8831E09" target="_blank" rel="noopener">Etherscan</a>
+          </div>
+          <p class="hint" id="watchHint" aria-live="polite"></p>
+        </div>
+        <div class="tok">
+          <div class="tokhead"><b>VMPXe (test)</b><span class="muted small">X1 testnet · Token-2022 · decimals 9</span></div>
+          <code>GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj</code>
+          <div class="tokbtns">
+            <button type="button" class="copy" data-copy="GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj" data-i18n="copy">Copy</button>
+            <a class="copy" href="https://explorer.testnet.x1.xyz/address/GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj" target="_blank" rel="noopener" data-i18n="tokX1Exp">X1 explorer</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="card ledger" aria-labelledby="ledgerTitle">
+      <h2 id="ledgerTitle" data-i18n="ledger">Live backing</h2>
+      <div class="scale" aria-hidden="true">
+        <div class="post"></div>
+        <div class="beam" id="beam">
+          <div class="pan l"><i></i><b>Ethereum</b></div>
+          <div class="pan r"><i></i><b>X1</b></div>
+        </div>
+      </div>
+      <div class="figs">
+        <div class="fig eth"><small data-i18n="lockedLbl"></small><strong id="locked">—</strong><small data-i18n="lockedSub"></small></div>
+        <div class="fig x1"><small data-i18n="supLbl"></small><strong id="supply">—</strong><small data-i18n="supSub"></small></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <p class="stamp" id="stamp"></p>
+    </aside>
+  </main>
+
+  <section class="info">
+    <div>
+      <h3 data-i18n="trustH"></h3>
+      <div class="trust eth">
+        <p><strong data-i18n="trustE2Xh"></strong></p>
+        <p data-i18n="trustE2Xp"></p>
+      </div>
+      <div class="trust x1">
+        <p><strong data-i18n="trustX2Eh"></strong></p>
+        <p data-i18n="trustX2Ep"></p>
+      </div>
+      <p class="u-mist" data-i18n="pauseNote"></p>
+    </div>
+    <div>
+      <h3 data-i18n="beforeH"></h3>
+      <ul class="risks">
+        <li data-i18n-html="risk1"></li>
+        <li data-i18n-html="risk2"></li>
+        <li data-i18n-html="risk3"></li>
+        <li data-i18n-html="risk4"></li>
+        <li data-i18n-html="risk5"></li>
+      </ul>
+      <table class="addr" id="addrTable"></table>
+    </div>
+  </section>
+
+  <section class="card txcta" aria-labelledby="ctaH">
+    <div>
+      <h3 id="ctaH" data-i18n="tabTx">Transactions</h3>
+      <p class="actsub" data-i18n="ctaP"></p>
+    </div>
+    <a class="txbtn" href="#/tx" data-i18n="ctaBtn">Transactions →</a>
+  </section>
+  </div>
+
+  <section class="txv stv hidden" id="viewStats" aria-labelledby="stH">
+    <a class="txback" href="#/" data-i18n="backBridge">← Back to bridge</a>
+    <h1 id="stH" tabindex="-1" data-i18n="tabStats">Statistics</h1>
+    <div class="card bstatbox hidden" id="bStatBox" aria-live="polite"></div>
+    <div id="stBody" aria-live="polite"></div>
+  </section>
+
+  <section class="txv hidden" id="viewTx" aria-labelledby="txH">
+    <a class="txback" href="#/" data-i18n="backBridge">← Back to bridge</a>
+    <h1 id="txH" tabindex="-1" data-i18n="txH">Transactions</h1>
+    <p class="actsub" data-i18n="txSub"></p>
+    <p class="actbot hidden" id="actBot" data-i18n-html="actBot"></p>
+    <form class="txsearch" id="txSearch" role="search" novalidate>
+      <label for="txQ" class="sr-only" data-i18n="txSearchLbl">Search transfers</label>
+      <input class="addr" id="txQ" autocomplete="off" spellcheck="false" maxlength="100" data-i18n-ph="txSearchPh" aria-describedby="txHint">
+      <button class="txbtn" data-i18n="txSearchBtn">Search</button>
+    </form>
+    <div class="hint" id="txHint" aria-live="polite"></div>
+    <a class="txback hidden" id="txBack" href="#/tx" data-i18n="txBack">← All transactions</a>
+    <div class="txfilters" id="txFilters">
+      <div class="net" role="group" id="fDir" data-i18n-aria="fDirAria">
+        <button type="button" data-v="all" data-i18n="fAll">All</button>
+        <button type="button" data-v="e2x">Ethereum → X1</button>
+        <button type="button" data-v="x2e">X1 → Ethereum</button>
+      </div>
+      <div class="net" role="group" id="fBot" data-i18n-aria="fBotAria">
+        <button type="button" data-v="all" data-i18n="fAnyone">Everyone</button>
+        <button type="button" data-v="human" data-i18n="fHuman">People</button>
+        <button type="button" data-v="bot" data-i18n="fBot">Test bot</button>
+      </div>
+    </div>
+    <p class="txinfo" id="txInfo" aria-live="polite"></p>
+    <div id="txBody" aria-live="polite"></div>
+    <nav class="pager" id="txPager" aria-label="Pages">
+      <button type="button" id="txPrevBtn" data-i18n="txPrev">← Previous</button>
+      <span id="txPageNo"></span>
+      <button type="button" id="txNextBtn" data-i18n="txNext">Next →</button>
+    </nav>
+  </section>
+
+  <section class="wpv hidden" id="viewWp" aria-labelledby="wpH">
+    <a class="txback" href="#/" data-i18n="backBridge">← Back to bridge</a>
+    <div id="wpBody"></div>
+    <a class="txback" href="#/" data-i18n="backBridge">← Back to bridge</a>
+  </section>
+
+  <footer class="foot">
+    <section class="contracts" aria-labelledby="ctrH">
+      <div class="chead">
+        <h2 class="clab" id="ctrH" data-i18n="ctrH">On-chain contracts</h2>
+        <div class="net cnetsw" role="group" data-i18n-aria="ctrNetAria">
+          <button type="button" id="ctrTest" aria-pressed="true" aria-controls="chipsTest">Testnet</button>
+          <button type="button" id="ctrMain" aria-pressed="false" aria-controls="chipsMain">Mainnet</button>
+        </div>
+      </div>
+      <ul class="chips" id="chipsTest">
+        <li class="addrchip"><b>tVMPX</b><span class="cnet">Sepolia</span><code title="0xCC0c84755384b041470C021D338639EDa8831E09">0xCC0c…1E09</code><button type="button" class="copy" data-copy="0xCC0c84755384b041470C021D338639EDa8831E09" data-i18n="copy">Copy</button><a class="copy" href="https://sepolia.etherscan.io/token/0xCC0c84755384b041470C021D338639EDa8831E09" target="_blank" rel="noopener">Etherscan</a></li>
+        <li class="addrchip"><b data-i18n="ctrRouter">Bridge router (lockbox)</b><span class="cnet">Sepolia</span><code title="0x048C8208B0B37157FBbD71a737a34B1C5A00f6C8">0x048C…f6C8</code><button type="button" class="copy" data-copy="0x048C8208B0B37157FBbD71a737a34B1C5A00f6C8" data-i18n="copy">Copy</button><a class="copy" href="https://sepolia.etherscan.io/address/0x048C8208B0B37157FBbD71a737a34B1C5A00f6C8" target="_blank" rel="noopener">Etherscan</a></li>
+        <li class="addrchip"><b data-i18n="ctrMint">VMPXe mint</b><span class="cnet">X1 testnet</span><code title="GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj">GjSYfU…CBzj</code><button type="button" class="copy" data-copy="GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj" data-i18n="copy">Copy</button><a class="copy" href="https://explorer.testnet.x1.xyz/address/GjSYfUZueEiH7pjP6df1aJimEBzDZKdJbP17akxjCBzj" target="_blank" rel="noopener" data-i18n="tokX1Exp">X1 explorer</a></li>
+      </ul>
+      <ul class="chips hidden" id="chipsMain">
+        <li class="addrchip"><b>VMPX</b><span class="cnet">Ethereum</span><code title="0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C">0xb48E…0b9C</code><button type="button" class="copy" data-copy="0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C" data-i18n="copy">Copy</button><a class="copy" href="https://etherscan.io/token/0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C" target="_blank" rel="noopener">Etherscan</a></li>
+        <li class="addrchip soon"><b data-i18n="ctrRouter">Bridge router (lockbox)</b><span class="cnet">Ethereum</span><span class="csoon" data-i18n="soon">Coming soon</span></li>
+        <li class="addrchip soon"><b data-i18n="ctrMint">VMPXe mint</b><span class="cnet">X1</span><span class="csoon" data-i18n="soon">Coming soon</span></li>
+      </ul>
+    </section>
+    <div class="fin">
+      <span>VMPX Bridge · X1 Network</span>
+      <span id="foot"></span>
+      <span class="sp" data-i18n="ecoPart">Part of the ANL ecosystem.</span>
+    </div>
+    <p class="disc" id="disc" data-i18n="disc"></p>
+    <p class="disc"><span data-i18n="contact">Security contact</span>: <a id="tgContact" href="https://t.me/dawidosX" target="_blank" rel="noopener">Telegram @dawidosX</a> · <span data-i18n="tgNote">I never DM first and will never ask for your seed phrase or private keys.</span></p>
+    <div class="ecobar" id="ecoLinks">
+      <a id="wpLink" href="#/wp" data-i18n="wpLink">White Paper</a><span class="dot" aria-hidden="true">·</span><a id="repoLink" href="https://github.com/dawidosX/vmpx-bridge" target="_blank" rel="noopener">GitHub</a><span class="dot" aria-hidden="true">·</span><a id="secLink" href="https://github.com/dawidosX/vmpx-bridge/blob/main/SECURITY.md" target="_blank" rel="noopener" data-i18n="ecoSec">Security</a><span class="dot" aria-hidden="true">·</span><a id="x1Link" href="https://x1.xyz" target="_blank" rel="noopener" data-i18n="ecoPowered">Powered by X1</a><span class="dot" aria-hidden="true">·</span><a id="anlLink" href="https://anl-protocol.com/" data-href-pl="https://anl-protocol.com/pl/index.html" data-i18n="ecoPartLink">Part of the ANL Ecosystem</a><span class="dot" aria-hidden="true">·</span><a id="tgLink" href="https://t.me/anlprotocol" target="_blank" rel="noopener">Telegram</a><span class="dot" aria-hidden="true">·</span><a id="xLink" href="https://x.com/ANLprotocol" target="_blank" rel="noopener">X</a>
+    </div>
+  </footer>
+</div>
+<script src="core.js?v=5" defer></script>
+<script src="app.js?v=46" defer></script>
+</body>
+</html>

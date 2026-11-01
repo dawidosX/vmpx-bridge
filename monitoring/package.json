@@ -1,0 +1,15 @@
+{
+  "name": "vmpx-bridge-monitoring",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.mjs && bash test/auto-pause.test.sh",
+    "start": "node src/monitor.mjs"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "dependencies": {
+    "@noble/hashes": "2.4.0"
+  }
+}

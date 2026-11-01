@@ -1,0 +1,439 @@
+{
+  "schema": 1,
+  "lang": "en",
+  "meta": {
+    "eyebrow": "White Paper · Testnet",
+    "title": [
+      "VMPX ",
+      {
+        "g": "Bridge"
+      }
+    ],
+    "lead": "A bridge for VMPX between Ethereum and the X1 blockchain, built by the XEN community. Every VMPXe on X1 is backed 1:1 by original VMPX locked on Ethereum, and anyone can verify the backing live.",
+    "version": "0.1",
+    "date": "1 November 2026",
+    "site": "bridge.x1watch.xyz",
+    "badge": "Product · Overview",
+    "labels": {
+      "version": "Version",
+      "date": "Date",
+      "site": "Site"
+    },
+    "endNote": "a XEN community project",
+    "draft": false
+  },
+  "metrics": [
+    {
+      "v": "1:1",
+      "l": "backing"
+    },
+    {
+      "v": "3%",
+      "l": "fee ETH → X1"
+    },
+    {
+      "v": "48 h",
+      "l": "mainnet timelock"
+    },
+    {
+      "v": "11",
+      "l": "AI review rounds"
+    }
+  ],
+  "sections": [
+    {
+      "num": "01",
+      "title": "What VMPX Bridge is",
+      "lead": "The bridge moves VMPX from Ethereum to X1 and back, 1:1, with no account and no middleman.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "All you need is two wallets: MetaMask on the Ethereum side and Backpack or X1 Wallet on the X1 side. There is no registration: your wallet is your identity, and you sign every step yourself."
+        },
+        {
+          "type": "p",
+          "text": [
+            "The bridge is built on ",
+            {
+              "b": "Hyperlane Warp Route"
+            },
+            ", an open bridge standard with external audits, not on custom cryptography. It runs publicly on testnet (Sepolia ⇄ X1 testnet). Mainnet will launch with a cap of about 1,000 USD in the bridge, raised step by step."
+          ]
+        }
+      ]
+    },
+    {
+      "num": "02",
+      "title": "Why we are building it",
+      "lead": "The XEN community has waited years for a path into X1. The announced VMPX bridge was never delivered, so we are building it ourselves.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": [
+            "VMPX launched in 2023 in the XEN ecosystem as a fair-launch token: no allocation for founders or investors, with supply capped at ",
+            {
+              "b": "108,624,000"
+            },
+            ". From the start it was meant to be the bridge token between Ethereum and X1."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "The originally announced VMPX bridge was not delivered. We are building VMPX Bridge as members of the community. The project is independent: it is not affiliated with or endorsed by X1 Labs."
+        },
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Simple"
+              },
+              " — one page, two wallets, one button."
+            ],
+            [
+              {
+                "b": "Transparent"
+              },
+              " — open code, backing and transfers live."
+            ],
+            [
+              {
+                "b": "Careful"
+              },
+              " — small amounts at launch; limits grow only once the bridge has proven itself."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "num": "03",
+      "title": "How it works",
+      "lead": "Original VMPX stays locked on Ethereum; on X1 its counterpart VMPXe circulates and is burned on the way back.",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Ethereum → X1"
+        },
+        {
+          "type": "p",
+          "text": "You approve exactly the transfer amount, the bridge contract (lockbox) locks the VMPX and sends a message. Validators attest it, and the program on X1 mints VMPXe to your address."
+        },
+        {
+          "type": "h2",
+          "text": "X1 → Ethereum"
+        },
+        {
+          "type": "p",
+          "text": "You burn VMPXe on X1, the message is attested, and the lockbox on Ethereum unlocks VMPX to your address."
+        },
+        {
+          "type": "h2",
+          "text": "Foundations"
+        },
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Hyperlane Warp Route"
+              },
+              " — a collateral contract on Ethereum, a Token-2022 token on X1. Our own code is limited to the fee router, the fee hook and configuration."
+            ],
+            [
+              {
+                "b": "Precision"
+              },
+              " — VMPX on Ethereum has 18 decimals, VMPXe on X1 has 9. A transfer amount can have at most 9 decimals; only the 3% fee is rounded down."
+            ],
+            [
+              {
+                "b": "Timing"
+              },
+              " — on testnet Ethereum → X1 takes about 1 min, X1 → Ethereum 20–30 s. On mainnet Ethereum → X1 will take a few minutes (safe number of blocks)."
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "gold",
+          "label": "Backing rule",
+          "text": "Lockbox balance on Ethereum ≥ VMPXe supply on X1 + transfers in flight. The monitor checks this continuously and the site shows it live."
+        }
+      ]
+    },
+    {
+      "num": "04",
+      "title": "Security",
+      "lead": "Security is layered: each layer assumes the previous one may fail.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Message verification"
+            },
+            " — every message passes three checks at once: attestation by the required number of validators, no pause, and the daily limit. On mainnet we plan 5 of 7 independent attestations, with keys in KMS modules."
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Limits"
+            },
+            " — the daily limit caps traffic per day, and a cap limits the total amount in the bridge (about 1,000 USD at launch)."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "label": "Automatic pause",
+          "text": "Every 30 s the monitor matches each mint on X1 to a deposit on Ethereum, and each withdrawal to a burn on X1 — by message ID, across two independent data sources. Hard evidence of a violation pauses the bridge in both directions and the team is alerted immediately. From violation to pause takes up to about 2 minutes in practice: detection every 30 s, decision every 60 s; sending the pause took 15 s in our drill."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Role",
+            "Can",
+            "Cannot"
+          ],
+          "rows": [
+            [
+              "Auto-pause key",
+              "Pause the bridge",
+              "Unpause, move funds, change settings"
+            ],
+            [
+              "Guardian (mainnet: 2-of-3 multisig)",
+              "Unpause, add/remove pause keys, cancel a queued timelock operation",
+              "Move funds, change bridge parameters"
+            ],
+            [
+              "Timelock",
+              "Change parameters or code, with a delay of at least 48 h (testnet: 300 s)",
+              "Do anything instantly"
+            ],
+            [
+              "Safe (multisig)",
+              "Schedule operations in the timelock",
+              "Bypass the timelock delay"
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Multisig with Ledger"
+            },
+            " — every operation requires the founder's signature (Ledger) and a team member's. The final mainnet threshold (2 of 2 or 3 of 5) is still being decided."
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Hard fee limits"
+            },
+            " — the contract does not allow a VMPX fee above 5%, and the XNT fee has a cap fixed permanently at deployment (mainnet 10 XNT, testnet 1 XNT)."
+          ]
+        }
+      ]
+    },
+    {
+      "num": "05",
+      "title": "Fees and flow of funds",
+      "lead": "You sign every step yourself, and before signing you see what you send, the fee, and what arrives.",
+      "blocks": [
+        {
+          "type": "table",
+          "head": [
+            "Direction",
+            "Bridge fee",
+            "Additionally"
+          ],
+          "rows": [
+            [
+              "Ethereum → X1",
+              "3% in VMPX",
+              "0.0002 ETH for delivery"
+            ],
+            [
+              "X1 → Ethereum",
+              "1 XNT (testnet 0.1 XNT)",
+              "~0.05 XNT network fees · 0% in VMPX"
+            ]
+          ],
+          "num": [
+            1,
+            2
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            "Example: you send 10,000 VMPX from Ethereum and receive ",
+            {
+              "b": "9,700 VMPXe"
+            },
+            " on X1, plus Ethereum gas and 0.0002 ETH. In the other direction the full VMPX amount arrives."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "The 3% VMPX fee goes to the LP Treasury in the same transaction, intended for VMPX/XNT liquidity on X1. The 0.0002 ETH fee covers the gas of the relayer delivering the transfer to X1. The XNT fee goes on mainnet to the project multisig on X1. The treasury balance is public and shown on the site."
+        }
+      ]
+    },
+    {
+      "num": "06",
+      "title": "Transparency and code reviews",
+      "lead": "We do not ask for trust — everything important can be checked yourself.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Live backing"
+              },
+              " — how much VMPX is locked on Ethereum, how much VMPXe circulates on X1 and how much is in flight; the same numbers are on-chain."
+            ],
+            [
+              {
+                "b": "Every transfer"
+              },
+              " — the Transactions tab with search by address and hash and explorer links; Statistics with volume, fees and treasury balance."
+            ],
+            [
+              {
+                "b": "Open code"
+              },
+              " — contracts, X1 program, site, monitor and indexer in a public repository, together with the review reports."
+            ]
+          ]
+        },
+        {
+          "type": "card",
+          "title": "How we reviewed the code",
+          "body": [
+            [
+              "The project has had no paid external audit. The code went through ",
+              {
+                "b": "11 rounds"
+              },
+              " of independent AI-assisted reviews (every finding fixed or documented), a review by an independent reviewer, contract analysis with Slither, Foundry tests, end-to-end tests with real wallets on every site version since November 2026, manual community testing, and a drill of the automatic pause on the live test bridge."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "num": "07",
+      "title": "Risks",
+      "lead": "Every cross-chain bridge carries risk. We state it plainly.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "No external audit"
+              },
+              " — no review guarantees the absence of bugs. That is why mainnet launches with a small cap."
+            ],
+            [
+              {
+                "b": "Validators"
+              },
+              " — compromising the required number of validator keys would allow a forged message to be attested. Auto-pause is meant to stop the bridge, but may not act before the first damage."
+            ],
+            [
+              {
+                "b": "Admin keys"
+              },
+              " — losing them can block administration; compromising them could allow a harmful change. The timelock gives 48 h to react."
+            ],
+            [
+              {
+                "b": "Dependencies"
+              },
+              " — a bug or outage in Hyperlane, Ethereum or X1 can halt transfers."
+            ],
+            [
+              {
+                "b": "Pause and limits"
+              },
+              " — while paused, Ethereum → X1 is rejected and X1 → Ethereum waits until unpause. When the daily limit is used up, a large transfer waits for it to refill."
+            ],
+            [
+              {
+                "b": "Price and liquidity"
+              },
+              " — the bridge guarantees 1:1 backing, not the price or liquidity of VMPXe on X1."
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Use the bridge only with amounts you can afford to lose, especially early on."
+        }
+      ]
+    },
+    {
+      "num": "08",
+      "title": "What's next",
+      "lead": "We move in stages — the next step only once the previous one runs stably.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Now: public testnet"
+              },
+              " — we open the code; the community tests the bridge and reports bugs."
+            ],
+            [
+              {
+                "b": "Before mainnet"
+              },
+              " — permissions in a Ledger-backed multisig, validators on our own infrastructure with keys in KMS, a permission-change monitor, a bridge cap, a final review of the whole codebase."
+            ],
+            [
+              {
+                "b": "Mainnet"
+              },
+              " — launch with a cap of about 1,000 USD and a low daily limit; limits raised gradually via the timelock, visible in advance. Then VMPX/XNT liquidity on X1."
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "We do not give fixed dates: mainnet timing depends on test results, not the calendar."
+        },
+        {
+          "type": "h2",
+          "text": "Reporting bugs and contact"
+        },
+        {
+          "type": "p",
+          "text": [
+            "Report bugs and suggestions as GitHub issues. Report vulnerabilities only privately (Security → Report a vulnerability, per SECURITY.md); we plan rewards for significant reports. We never DM first and never ask for your seed phrase or private keys. The only bridge address is ",
+            {
+              "g": "bridge.x1watch.xyz"
+            },
+            "."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "gold",
+          "label": "Not investment advice · DYOR",
+          "text": "Nothing in this document, on the bridge site or in project channels is investment, financial or legal advice. Every crypto project, this one included, requires your own research (DYOR). Read the code, verify the backing on-chain and make your own decisions at your own risk. VMPXe is a 1:1-backed representation of VMPX on X1, not a promise of profit. The project is independent and not affiliated with X1 Labs."
+        }
+      ]
+    }
+  ]
+}

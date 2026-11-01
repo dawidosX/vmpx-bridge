@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../schema.json
+# PRIVATE registry entry for this project (X1 is NOT in hyperlane-registry as of @05582adc, 2026-10-28).
+# Fields marked TODO must be filled from on-chain reads before any deployment.
+blockExplorers:
+  - apiUrl: https://explorer.mainnet.x1.xyz
+    family: other
+    name: X1 Explorer
+    url: https://explorer.mainnet.x1.xyz
+blocks:
+  confirmations: 1
+  estimateBlockTime: 0.4      # TODO measure on X1 (Agave-fork default ~0.4 s)
+  reorgPeriod: 0              # agents use `finalized` commitment on Sealevel; see docs/03
+chainId: 1479626324           # "X1NT" — project-chosen, not an official X1 identifier
+deployer:
+  name: VMPX Bridge operator (private)
+displayName: X1
+domainId: 1479626324          # unique vs registry @05582adc; re-check before deploy
+name: x1
+nativeToken:
+  decimals: 9
+  denom: lamport
+  name: XNT
+  symbol: XNT
+protocol: sealevel
+rpcUrls:
+  - http: https://rpc.mainnet.x1.xyz    # public; limits 300 req/5s — run own RPC on operator nodes
+technicalStack: other
+# TODO: genesisHash (getGenesisHash) — record and pin in agents' config checks

@@ -1,0 +1,8 @@
+@hyperlane-xyz/core/=node_modules/@hyperlane-xyz/core/
+@openzeppelin/contracts/=node_modules/@hyperlane-xyz/core/dependencies/@openzeppelin-contracts-4.9.3/contracts/
+@openzeppelin/contracts-upgradeable/=node_modules/@hyperlane-xyz/core/dependencies/@openzeppelin-contracts-upgradeable-4.9.3/contracts/
+forge-std/=node_modules/@hyperlane-xyz/core/dependencies/forge-std-1.9.2/src/
+@arbitrum/nitro-contracts/=node_modules/@hyperlane-xyz/core/dependencies/@arbitrum-nitro-contracts-1.2.1/
+@chainlink/contracts-ccip/=node_modules/@hyperlane-xyz/core/dependencies/@chainlink-contracts-ccip-1.5.0/
+@eth-optimism/contracts/=node_modules/@hyperlane-xyz/core/dependencies/@eth-optimism-contracts-0.6.0/
+@predicate/=node_modules/@hyperlane-xyz/core/dependencies/@predicate-contracts-2.2.2/src/

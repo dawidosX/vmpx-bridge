@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../schema.json
+# PRIVATE entry (X1 is not in hyperlane-registry). Testnet pair: sepolia (11155111).
+blockExplorers:
+  - apiUrl: https://explorer.testnet.x1.xyz
+    family: other
+    name: X1 Testnet Explorer
+    url: https://explorer.testnet.x1.xyz
+blocks:
+  confirmations: 1
+  estimateBlockTime: 0.4
+  reorgPeriod: 0
+chainId: 1479626325
+deployer:
+  name: VMPX Bridge operator (private)
+displayName: X1 Testnet
+domainId: 1479626325
+isTestnet: true
+name: x1testnet
+nativeToken:
+  decimals: 9
+  denom: lamport
+  name: XNT
+  symbol: XNT
+protocol: sealevel
+rpcUrls:
+  - http: https://rpc.testnet.x1.xyz
+technicalStack: other

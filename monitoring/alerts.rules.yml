@@ -1,0 +1,101 @@
+# Prometheus alerting rules. Metric prefix `hyperlane_` verified in
+# hyperlane-monorepo@a9b3e870 rust/main/hyperlane-base/src/metrics (NAMESPACE = "hyperlane").
+# Exact label sets differ per agent version — confirm with `curl :9090/metrics` on the deployed agents.
+groups:
+  - name: vmpx-bridge-collateral
+    rules:
+      # Round C (docs/16-auto-pause-model.md): CRITICAL comes only from evidence matched by message ID or a mint change
+      - alert: BridgeEvidenceCritical
+        expr: vmpx_bridge_severity == 2
+        for: 0m
+        labels: { severity: critical, action: pause }
+        annotations:
+          summary: "mint without lock, unlock without burn (by message ID) or mint authority changed: auto-pause (runbook §3)"
+      # R6-06: the balance alarm and the evidence state are separate metrics, alarmed independently of each other.
+      # F-01: the Telegram service (src/alerts-core.mjs) mirrors these two rules: "niedobór pokrycia" and
+      # "saldo pokrycia nieaktualne" (10 min); a stale or missing observation holds the shortfall alarm (no "resolved").
+      - alert: BalanceShortfallPersistent
+        expr: vmpx_bridge_balance_alarm == 1
+        labels: { severity: critical }
+        annotations: { summary: "lockbox below X1 supply + in-flight for 30 min on consecutive reads (gaps under 2 min): a human checks (no automatic pause)" }
+      - alert: EvidenceNotOk
+        expr: vmpx_bridge_evidence_unknown_seconds > 600
+        labels: { severity: critical }
+        annotations: { summary: "evidence by message ID not usable for 10 min (read failed, unresolved X1 messages or unconfirmed candidates): no automatic pause possible" }
+      - alert: EvidenceUnconfirmed
+        expr: vmpx_bridge_evidence_unconfirmed > 0
+        for: 0m
+        labels: { severity: critical }
+        annotations: { summary: "a mint/unlock without counterpart was seen but NOT confirmed in two sources per chain (R6-01): check the IDs in the monitor log now" }
+      # Round E (Codex round 7)
+      - alert: EvidenceSourcesDiverged
+        expr: vmpx_bridge_evidence_sources_diverged > 0
+        for: 0m
+        labels: { severity: critical }
+        annotations: { summary: "the two Ethereum log sources disagree on the lockbox's Dispatch/Process set (R7-02): one RPC silently skips logs; no automatic pause possible, check now" }
+      - alert: EvidenceSecondSourceMissing
+        expr: vmpx_bridge_evidence_second_source == 0
+        for: 5m
+        labels: { severity: critical }
+        annotations: { summary: "ETH_LOGS_RPC2 not configured: the lockbox logs come from one source only (evidence UNKNOWN)" }
+      - alert: EvidenceFullScanStale
+        expr: vmpx_bridge_evidence_second_source == 1 and time() - vmpx_bridge_evidence_full_scan_done_timestamp > 7200
+        labels: { severity: warning }
+        annotations: { summary: "no full review of both log sources from FROM_BLOCK in 2 h (R7-02)" }
+      - alert: MintCheckFailing
+        expr: vmpx_bridge_mint_check_ok == 0
+        for: 5m
+        labels: { severity: critical }
+        annotations: { summary: "the mint authority / freeze / extension check has not completed for 5 min (R7-01: its own task and budget)" }
+      - alert: BalanceObservationsStale
+        expr: vmpx_bridge_balance_stale == 1 or vmpx_bridge_balance_observed_age_seconds < 0 or vmpx_bridge_balance_observed_age_seconds > 120
+        for: 10m
+        labels: { severity: warning }
+        annotations: { summary: "no successful balance observation for over 10 min (or none since the monitor started): the 30-min shortfall timer is void and the shortfall alarm can neither fire nor clear (R7-04, F-01)" }
+      # R8-01: the evidence cache is written in the background; a hung or failing disk never holds back a result,
+      # but it means a restart would rescan from FROM_BLOCK
+      - alert: StateCacheWriteStalled
+        expr: increase(vmpx_bridge_state_write_timeouts_total[15m]) > 0 or increase(vmpx_bridge_state_write_skipped_total[15m]) > 0 or increase(vmpx_bridge_state_write_errors_total[15m]) > 0
+        labels: { severity: warning }
+        annotations: { summary: "evidence cache writes time out, fail or are skipped (disk); results are still published (R8-01)" }
+      # R4-03 / R5-04: losing the ability to judge is an alarm of its own
+      - alert: MonitorStale
+        expr: absent(vmpx_bridge_last_result_timestamp) or time() - vmpx_bridge_last_result_timestamp > 300
+        labels: { severity: critical }
+        annotations: { summary: "collateral monitor produced no result for 5 min (stopped or hung) or its metrics are gone" }
+      - alert: MonitorTickTooLong
+        expr: vmpx_bridge_tick_running_seconds > 300
+        labels: { severity: warning }
+        annotations: { summary: "a monitor tick has been running for over 5 min although every task has its own budget (mint 30 s, evidence 180 s, balance 60 s): a task ignores its abort" }
+      - alert: MonitorReadsFailing
+        expr: time() - vmpx_bridge_last_read_ok_timestamp > 600
+        labels: { severity: critical }
+        annotations: { summary: "no tick with all reads successful for 10 min" }
+      - alert: CoverageUnknown
+        expr: vmpx_bridge_unknown_seconds > 600
+        labels: { severity: critical }
+        annotations: { summary: "evidence could not be collected for 10 min (RPC, logs or unresolved X1 messages)" }
+      - alert: EvidenceWaitingTooLong
+        expr: vmpx_bridge_evidence_waiting > 0
+        for: 45m
+        labels: { severity: warning }
+        annotations: { summary: "a message has waited 45 min for its counterpart to be finalized (finality stalled or logs not scanned)" }
+  - name: vmpx-bridge-agents
+    rules:
+      - alert: RelayerQueueGrowing
+        expr: sum(hyperlane_submitter_queue_length{agent="relayer"}) > 0
+        for: 20m
+        labels: { severity: warning }
+        annotations: { summary: "messages waiting > 20 min (relayer, RPC or ISM/validator problem)" }
+      - alert: ValidatorCheckpointStalled
+        expr: changes(hyperlane_latest_checkpoint{agent="validator"}[30m]) == 0 and on() (increase(hyperlane_operations_processed_count[30m]) > 0)
+        labels: { severity: critical }
+        annotations: { summary: "a validator stopped signing while traffic exists — threshold margin shrinking" }
+      - alert: RelayerWalletLow
+        expr: hyperlane_wallet_balance{agent="relayer"} < 0.05
+        for: 10m
+        labels: { severity: warning }
+        annotations: { summary: "relayer gas wallet low (ETH on Ethereum or XNT on X1)" }
+      - alert: AgentCriticalError
+        expr: hyperlane_critical_error > 0
+        labels: { severity: critical }

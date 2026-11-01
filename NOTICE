@@ -1,0 +1,20 @@
+VMPX Bridge (Ethereum ⇄ X1)
+Copyright 2026 the VMPX Bridge contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It builds on and includes code from the following projects:
+
+- Hyperlane (https://github.com/hyperlane-xyz/hyperlane-monorepo), Apache License 2.0
+  Copyright Abacus Works, Inc.
+  Used: @hyperlane-xyz/core 12.2.0 (Solidity contracts, npm dependency of evm/),
+  Hyperlane Sealevel programs and agents at commit f556e18 (built and deployed by the testnet scripts).
+  evm/test/legacy/VmpxCollateralRouterV1.sol and evm/src/VmpxCollateralRouter.sol extend HypERC20Collateral.
+
+- @solana/web3.js 1.98.4 (https://github.com/solana-labs/solana-web3.js), MIT License
+  Copyright (c) 2023 Solana Labs, Inc.
+  Bundled unmodified as frontend/www/vendor/solana-web3-1.98.4.iife.min.js.
+
+- OpenZeppelin Contracts 4.9.3 (https://github.com/OpenZeppelin/openzeppelin-contracts), MIT License
+  Copyright (c) 2016-2023 zOS Global Limited and contributors
+  Used through the Hyperlane core dependency tree.

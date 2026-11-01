@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the bridge.x1watch.xyz recent transfers indexer every 60 s
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

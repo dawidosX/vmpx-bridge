@@ -1,0 +1,30 @@
+name: Bridge bug
+description: A transfer did not arrive, wrong amount or fee, stuck message (testnet)
+labels: [bridge, bug]
+body:
+  - type: markdown
+    attributes:
+      value: "**Not for vulnerabilities** — report those privately (SECURITY.md). If funds could be stolen or minted without backing, do NOT post here."
+  - type: dropdown
+    id: direction
+    attributes: { label: Direction, options: ["Ethereum → X1", "X1 → Ethereum"] }
+    validations: { required: true }
+  - type: input
+    id: tx
+    attributes: { label: Source transaction hash / signature }
+    validations: { required: true }
+  - type: input
+    id: id
+    attributes: { label: Hyperlane message ID (if shown) }
+  - type: input
+    id: amounts
+    attributes: { label: Amount sent and amount received (or none), placeholder: "sent 100 VMPX, received 0 after 30 min" }
+    validations: { required: true }
+  - type: input
+    id: when
+    attributes: { label: Time sent (UTC) }
+    validations: { required: true }
+  - type: textarea
+    id: details
+    attributes: { label: What happened, description: "Page version (footer), wallet, what the page showed." }
+    validations: { required: true }

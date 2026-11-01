@@ -1,0 +1,439 @@
+{
+  "schema": 1,
+  "lang": "pl",
+  "meta": {
+    "eyebrow": "White Paper · Testnet",
+    "title": [
+      "VMPX ",
+      {
+        "g": "Bridge"
+      }
+    ],
+    "lead": "Most dla VMPX między Ethereum a blockchainem X1, zbudowany przez społeczność XEN. Każdy VMPXe na X1 ma pokrycie 1:1 w oryginalnych VMPX zablokowanych na Ethereum, a pokrycie może sprawdzić każdy, na żywo.",
+    "version": "0.1",
+    "date": "1 listopada 2026",
+    "site": "bridge.x1watch.xyz",
+    "badge": "Produkt · Przegląd",
+    "labels": {
+      "version": "Wersja",
+      "date": "Data",
+      "site": "Strona"
+    },
+    "endNote": "projekt społeczności XEN",
+    "draft": false
+  },
+  "metrics": [
+    {
+      "v": "1:1",
+      "l": "pokrycie"
+    },
+    {
+      "v": "3%",
+      "l": "opłata ETH → X1"
+    },
+    {
+      "v": "48 h",
+      "l": "Timelock na mainnecie"
+    },
+    {
+      "v": "11",
+      "l": "rund przeglądów AI"
+    }
+  ],
+  "sections": [
+    {
+      "num": "01",
+      "title": "Czym jest VMPX Bridge",
+      "lead": "Most przenosi VMPX z Ethereum na X1 i z powrotem, 1:1, bez konta i bez pośrednika.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "Wystarczą dwa portfele: MetaMask po stronie Ethereum oraz Backpack albo X1 Wallet po stronie X1. Nie ma rejestracji: portfel jest Twoją tożsamością, a każdy krok podpisujesz sam."
+        },
+        {
+          "type": "p",
+          "text": [
+            "Most opiera się na ",
+            {
+              "b": "Hyperlane Warp Route"
+            },
+            ", otwartym standardzie mostów z zewnętrznymi audytami, a nie na własnej kryptografii. Działa publicznie na testnecie (Sepolia ⇄ X1 testnet). Mainnet wystartuje z sufitem około 1000 USD w moście, podnoszonym stopniowo."
+          ]
+        }
+      ]
+    },
+    {
+      "num": "02",
+      "title": "Dlaczego go budujemy",
+      "lead": "Społeczność XEN od lat czekała na drogę do X1. Zapowiadany most VMPX nie powstał, więc budujemy go sami.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": [
+            "VMPX wystartował w 2023 roku w ekosystemie XEN jako token z uczciwym startem: bez przydziału dla twórców i inwestorów, z podażą ograniczoną do ",
+            {
+              "b": "108 624 000"
+            },
+            ". Od początku miał być tokenem mostowym między Ethereum a X1."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Pierwotnie zapowiadany most VMPX nie został dostarczony. VMPX Bridge budujemy jako członkowie społeczności. Projekt jest niezależny: nie jest powiązany z X1 Labs ani przez nie wspierany."
+        },
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Prosto"
+              },
+              " — jedna strona, dwa portfele, jeden przycisk."
+            ],
+            [
+              {
+                "b": "Przejrzyście"
+              },
+              " — otwarty kod, pokrycie i transfery na żywo."
+            ],
+            [
+              {
+                "b": "Ostrożnie"
+              },
+              " — małe kwoty na start, limity rosną dopiero, gdy most się sprawdzi."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "num": "03",
+      "title": "Jak działa",
+      "lead": "Oryginalne VMPX zostają zablokowane na Ethereum; na X1 krąży ich odpowiednik VMPXe, który znika przy powrocie.",
+      "blocks": [
+        {
+          "type": "h2",
+          "text": "Ethereum → X1"
+        },
+        {
+          "type": "p",
+          "text": "Zatwierdzasz dokładnie kwotę transferu, kontrakt mostu (lockbox) blokuje VMPX i wysyła wiadomość. Walidatorzy ją poświadczają, a program na X1 wykonuje mint VMPXe na Twój adres."
+        },
+        {
+          "type": "h2",
+          "text": "X1 → Ethereum"
+        },
+        {
+          "type": "p",
+          "text": "Spalasz VMPXe na X1 (burn), wiadomość jest poświadczana, a lockbox na Ethereum odblokowuje VMPX na Twój adres."
+        },
+        {
+          "type": "h2",
+          "text": "Fundamenty"
+        },
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Hyperlane Warp Route"
+              },
+              " — na Ethereum kontrakt collateral, na X1 token Token-2022. Własny kod ograniczamy do routera z opłatą, hooka opłat i konfiguracji."
+            ],
+            [
+              {
+                "b": "Dokładność"
+              },
+              " — VMPX na Ethereum ma 18 miejsc po przecinku, VMPXe na X1 ma 9. Kwota transferu może mieć najwyżej 9 miejsc po przecinku; w dół zaokrąglana jest tylko opłata 3%."
+            ],
+            [
+              {
+                "b": "Czas"
+              },
+              " — na testnecie Ethereum → X1 ok. 1 min, X1 → Ethereum 20–30 s. Na mainnecie Ethereum → X1 potrwa kilka minut (bezpieczna liczba bloków)."
+            ]
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "gold",
+          "label": "Zasada pokrycia",
+          "text": "Saldo lockboxa na Ethereum ≥ podaż VMPXe na X1 + transfery w drodze. Monitor sprawdza to bez przerwy, a strona pokazuje na żywo."
+        }
+      ]
+    },
+    {
+      "num": "04",
+      "title": "Bezpieczeństwo",
+      "lead": "Zabezpieczenia są warstwowe: każda warstwa zakłada, że poprzednia może zawieść.",
+      "blocks": [
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Weryfikacja wiadomości"
+            },
+            " — każda wiadomość przechodzi naraz trzy kontrole: poświadczenie wymaganej liczby walidatorów, brak pauzy i limit dzienny. Na mainnecie planujemy 5 z 7 niezależnych poświadczeń, z kluczami w modułach KMS."
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Limity"
+            },
+            " — limit dzienny ogranicza ruch w ciągu doby, a sufit ogranicza całą kwotę w moście (na start ok. 1000 USD)."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "info",
+          "label": "Automatyczna pauza",
+          "text": "Monitor co 30 s dopasowuje każdy mint na X1 do depozytu na Ethereum, a każdą wypłatę do burn na X1 — po identyfikatorze wiadomości, w dwóch niezależnych źródłach danych. Twardy dowód naruszenia zatrzymuje most w obu kierunkach, a zespół dostaje natychmiastowy alarm. Od naruszenia do pauzy mija realnie do ok. 2 minut: wykrycie co 30 s, decyzja co 60 s, samo wysłanie pauzy w próbie: 15 s."
+        },
+        {
+          "type": "table",
+          "head": [
+            "Rola",
+            "Może",
+            "Nie może"
+          ],
+          "rows": [
+            [
+              "Klucz auto-pauzy",
+              "Zatrzymać most",
+              "Wznowić mostu, ruszyć środków, zmienić ustawień"
+            ],
+            [
+              "Strażnik (mainnet: multisig 2 z 3)",
+              "Wznowić most, dodać/usunąć klucze pauzy, anulować operację w Timelocku",
+              "Ruszyć środków, zmienić parametrów mostu"
+            ],
+            [
+              "Timelock",
+              "Zmienić parametry lub kod, z opóźnieniem min. 48 h (testnet: 300 s)",
+              "Zrobić cokolwiek natychmiast"
+            ],
+            [
+              "Safe (multisig)",
+              "Planować operacje w Timelocku",
+              "Ominąć opóźnienia Timelocka"
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Multisig z Ledgerem"
+            },
+            " — każda operacja wymaga podpisu założyciela (Ledger) i osoby z zespołu. Ostateczny próg na mainnet (2 z 2 albo 3 z 5) jest w trakcie decyzji."
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            {
+              "b": "Twarde limity opłat"
+            },
+            " — kontrakt nie pozwala ustawić opłaty VMPX powyżej 5%, a opłata XNT ma sufit ustalony na stałe przy wdrożeniu (mainnet 10 XNT, testnet 1 XNT)."
+          ]
+        }
+      ]
+    },
+    {
+      "num": "05",
+      "title": "Opłaty i przepływ środków",
+      "lead": "Każdy krok podpisujesz sam, a przed podpisem widzisz, ile wysyłasz, ile wynosi opłata i ile dotrze.",
+      "blocks": [
+        {
+          "type": "table",
+          "head": [
+            "Kierunek",
+            "Opłata mostu",
+            "Dodatkowo"
+          ],
+          "rows": [
+            [
+              "Ethereum → X1",
+              "3% w VMPX",
+              "0,0002 ETH na dostarczenie"
+            ],
+            [
+              "X1 → Ethereum",
+              "1 XNT (testnet 0,1 XNT)",
+              "ok. 0,05 XNT opłat sieci · 0% w VMPX"
+            ]
+          ],
+          "num": [
+            1,
+            2
+          ]
+        },
+        {
+          "type": "p",
+          "text": [
+            "Przykład: wysyłasz 10 000 VMPX z Ethereum, na X1 dostajesz ",
+            {
+              "b": "9 700 VMPXe"
+            },
+            ". Do tego gaz Ethereum i 0,0002 ETH. W drugą stronę kwota VMPX dochodzi w całości."
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Opłata 3% w VMPX trafia w tej samej transakcji do Skarbca LP, przeznaczonego na płynność VMPX/XNT na X1. Opłata 0,0002 ETH pokrywa gaz relayera dostarczającego transfer na X1. Opłata w XNT trafia na mainnecie do multisiga projektu na X1. Saldo skarbca jest publiczne i widoczne na stronie."
+        }
+      ]
+    },
+    {
+      "num": "06",
+      "title": "Przejrzystość i przeglądy kodu",
+      "lead": "Nie prosimy o zaufanie — wszystko, co ważne, można sprawdzić samemu.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Pokrycie na żywo"
+              },
+              " — ile VMPX jest zablokowanych na Ethereum, ile VMPXe krąży na X1 i ile jest w drodze; te same liczby w blockchainie."
+            ],
+            [
+              {
+                "b": "Każdy transfer"
+              },
+              " — zakładka Transakcje z wyszukiwaniem po adresie i hashu oraz linkami do eksploratorów; Statystyki z wolumenem, opłatami i stanem skarbca."
+            ],
+            [
+              {
+                "b": "Otwarty kod"
+              },
+              " — kontrakty, program na X1, strona, monitor i indekser w publicznym repozytorium, razem z raportami z przeglądów."
+            ]
+          ]
+        },
+        {
+          "type": "card",
+          "title": "Jak przeglądaliśmy kod",
+          "body": [
+            [
+              "Projekt nie miał płatnego, zewnętrznego audytu. Kod przeszedł ",
+              {
+                "b": "11 rund"
+              },
+              " niezależnych przeglądów narzędziami AI (każde znalezisko poprawione albo opisane), przegląd niezależnego recenzenta, analizę kontraktów narzędziem Slither, testy Foundry, testy end-to-end z prawdziwymi portfelami przy każdej wersji strony od listopada 2026, ręczne testy społeczności oraz próbę automatycznej pauzy na żywym moście testowym."
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "num": "07",
+      "title": "Ryzyka",
+      "lead": "Każdy most między blockchainami niesie ryzyko. Opisujemy je wprost.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Brak zewnętrznego audytu"
+              },
+              " — żaden przegląd nie gwarantuje braku błędów. Dlatego mainnet startuje z małym sufitem kwoty."
+            ],
+            [
+              {
+                "b": "Walidatorzy"
+              },
+              " — przejęcie wymaganej liczby kluczy pozwoliłoby poświadczyć fałszywą wiadomość. Auto-pauza ma wtedy zatrzymać most, ale może nie zdążyć przed pierwszą szkodą."
+            ],
+            [
+              {
+                "b": "Klucze administracyjne"
+              },
+              " — ich utrata może zablokować administrowanie, a przejęcie umożliwić szkodliwą zmianę. Timelock daje 48 h na reakcję."
+            ],
+            [
+              {
+                "b": "Zależności"
+              },
+              " — błąd lub awaria Hyperlane, Ethereum albo X1 może wstrzymać transfery."
+            ],
+            [
+              {
+                "b": "Pauza i limity"
+              },
+              " — w czasie pauzy Ethereum → X1 jest odrzucane, a X1 → Ethereum czeka do wznowienia. Po wyczerpaniu limitu dziennego duży transfer czeka na jego odnowienie."
+            ],
+            [
+              {
+                "b": "Cena i płynność"
+              },
+              " — most gwarantuje pokrycie 1:1, nie cenę ani płynność VMPXe na X1."
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Używaj mostu tylko z kwotami, których utratę możesz zaakceptować, szczególnie na początku."
+        }
+      ]
+    },
+    {
+      "num": "08",
+      "title": "Co dalej",
+      "lead": "Idziemy etapami — kolejny krok dopiero wtedy, gdy poprzedni działa stabilnie.",
+      "blocks": [
+        {
+          "type": "ul",
+          "items": [
+            [
+              {
+                "b": "Teraz: publiczny testnet"
+              },
+              " — otwieramy kod, społeczność testuje most i zgłasza błędy."
+            ],
+            [
+              {
+                "b": "Przed mainnetem"
+              },
+              " — uprawnienia w multisigu z Ledgerem, walidatorzy na własnej infrastrukturze z kluczami w KMS, monitor zmian uprawnień, sufit kwoty, końcowy przegląd całego kodu."
+            ],
+            [
+              {
+                "b": "Mainnet"
+              },
+              " — start z sufitem ok. 1000 USD i niskim limitem dziennym; limity podnoszone stopniowo przez Timelock, widoczne z wyprzedzeniem. Potem płynność VMPX/XNT na X1."
+            ]
+          ]
+        },
+        {
+          "type": "p",
+          "text": "Nie podajemy sztywnych dat: termin mainnetu zależy od wyników testów, nie od kalendarza."
+        },
+        {
+          "type": "h2",
+          "text": "Zgłaszanie błędów i kontakt"
+        },
+        {
+          "type": "p",
+          "text": [
+            "Błędy i sugestie zgłaszaj jako issue na GitHubie. Podatności wyłącznie prywatnie (Security → Report a vulnerability, według SECURITY.md); za istotne zgłoszenia przewidujemy nagrody. Nigdy nie piszemy pierwsi w prywatnej wiadomości i nigdy nie prosimy o seed phrase ani klucze prywatne. Jedyny adres mostu to ",
+            {
+              "g": "bridge.x1watch.xyz"
+            },
+            "."
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "gold",
+          "label": "Nie jest to porada inwestycyjna · DYOR",
+          "text": "Nic w tym dokumencie, na stronie mostu ani w kanałach projektu nie jest poradą inwestycyjną, finansową ani prawną. Każdy projekt kryptowalutowy, także ten, wymaga własnej analizy (DYOR). Przeczytaj kod, sprawdź pokrycie on-chain i podejmuj decyzje samodzielnie, na własną odpowiedzialność. VMPXe to reprezentacja VMPX na X1 z pokryciem 1:1, a nie obietnica zysku. Projekt jest niezależny i nie jest powiązany z X1 Labs."
+        }
+      ]
+    }
+  ]
+}

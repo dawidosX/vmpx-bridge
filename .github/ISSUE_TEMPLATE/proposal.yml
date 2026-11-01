@@ -1,0 +1,15 @@
+name: Proposal
+description: An idea for the page, docs, fees, limits or operations
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes: { label: Problem or need }
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes: { label: Proposal }
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes: { label: Alternatives and trade-offs }

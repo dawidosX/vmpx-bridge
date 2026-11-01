@@ -1,0 +1,18 @@
+{
+  "ethereum": {
+    "type": "collateral",
+    "decimals": 18,
+    "token": "0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C",
+    "foreignDeployment": "TODO_VmpxCollateralRouter_address_after_EVM_deploy"
+  },
+  "x1": {
+    "type": "synthetic",
+    "decimals": 9,
+    "remoteDecimals": 18,
+    "name": "Bridged VMPX (Ethereum) - unofficial",
+    "symbol": "VMPXe",
+    "uri": "TODO_https_url_to_metadata.json",
+    "interchainSecurityModule": "TODO_multisig_ism_message_id_program_on_x1",
+    "interchainGasPaymaster": "TODO_overhead_igp_account_on_x1_or_omit"
+  }
+}

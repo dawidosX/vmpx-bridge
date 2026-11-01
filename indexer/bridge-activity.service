@@ -1,0 +1,19 @@
+[Unit]
+Description=bridge.x1watch.xyz recent transfers indexer (read-only, testnet)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=bridgeact
+Group=bridgeact
+ExecStart=/usr/bin/python3 -I /opt/bridge-activity/activity.py /var/lib/bridge-activity/activity.json
+TimeoutStartSec=170
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ReadWritePaths=/var/lib/bridge-activity
+MemoryMax=256M
+CPUQuota=50%

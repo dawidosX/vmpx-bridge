@@ -1,0 +1,37 @@
+name: Page bug
+description: Something wrong on the bridge web page (testnet)
+labels: [page, bug]
+body:
+  - type: markdown
+    attributes:
+      value: "**Not for vulnerabilities** — report those privately (SECURITY.md). Never post a seed phrase or private key."
+  - type: input
+    id: version
+    attributes: { label: Page version, description: "Shown in the footer, e.g. v42", placeholder: v42 }
+    validations: { required: true }
+  - type: dropdown
+    id: direction
+    attributes: { label: Direction, options: ["Ethereum → X1", "X1 → Ethereum", "Not a transfer (display, history, other)"] }
+    validations: { required: true }
+  - type: input
+    id: wallet
+    attributes: { label: Wallet and version, placeholder: "MetaMask 13.x / Backpack 0.10.x / X1 Wallet ..." }
+    validations: { required: true }
+  - type: input
+    id: browser
+    attributes: { label: Browser, OS and device, placeholder: "Chrome 141, macOS 15, desktop" }
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes: { label: Steps to reproduce, placeholder: "1. ...\n2. ...\n3. ..." }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected and actual result }
+    validations: { required: true }
+  - type: input
+    id: tx
+    attributes: { label: Transaction hash / X1 signature, description: "If a transaction was sent (Sepolia hash or X1 signature)" }
+  - type: textarea
+    id: extra
+    attributes: { label: Screenshots, console output, anything else, description: "Browser console (F12) errors help a lot. Remove anything private." }

@@ -1,0 +1,13 @@
+{
+  "name": "Bridged VMPX (Ethereum) - unofficial",
+  "symbol": "VMPXe",
+  "description": "Representation of VMPX (Ethereum, 0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C) locked in a Hyperlane collateral router. Issued by a private bridge operator, NOT by the VMPX issuer. Redeemable 1:1 by bridging back to Ethereum. Security: operator-run validator multisig.",
+  "image": "TODO",
+  "external_url": "TODO_bridge_frontend_url",
+  "properties": {
+    "origin_chain": "ethereum:1",
+    "origin_token": "0xb48Eb8368c9C6e9b0734de1Ef4ceB9f484B80b9C",
+    "collateral_router": "TODO",
+    "decimals_note": "9 decimals on X1; 1 unit = 1e9 base units on Ethereum"
+  }
+}

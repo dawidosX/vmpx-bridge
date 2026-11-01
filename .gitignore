@@ -1,0 +1,17 @@
+node_modules
+evm/out/
+evm/cache/
+evm/broadcast/
+svm/decimals-check/target/
+*.env
+!*.env.example
+audit/context.txt
+testnet/testnet.env
+# keys, keystores and checkpoints never belong in the repo
+*.hex
+*keypair*.json
+keystores-agents/
+checkpoints/
+secure/
+.DS_Store
+__pycache__/

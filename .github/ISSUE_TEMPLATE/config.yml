@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (private)
+    url: https://github.com/dawidosX/vmpx-bridge/security/advisories/new
+    about: Never report vulnerabilities in public issues. Use private reporting (see SECURITY.md).
