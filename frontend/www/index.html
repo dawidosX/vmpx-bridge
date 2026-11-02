@@ -8,7 +8,9 @@
 <meta name="description" content="Move VMPX between Ethereum and X1. 1:1 backing visible live.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="preload" href="fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/chakra-petch-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css?v=7">
 <body>
 <nav class="eco" id="ecoBar" data-i18n-aria="ecoAria">
   <div class="wrap eco-in">
@@ -32,8 +34,8 @@
       <button type="button" id="netMain" aria-pressed="false" disabled data-i18n-title="mainTitle">Mainnet</button>
     </div>
     <div class="net lang" role="group" aria-label="Language / Język">
-      <button type="button" id="lnEN" lang="en" aria-pressed="true">EN</button>
       <button type="button" id="lnPL" lang="pl" aria-pressed="false">PL</button>
+      <button type="button" id="lnEN" lang="en" aria-pressed="true">EN</button>
     </div>
     <span class="wpill" id="walletPill"><button type="button" class="wallet" id="wallet" data-i18n="connect">Connect wallet</button><button type="button" class="wx hidden" id="walletX" data-i18n-title="disconnect" data-i18n-aria="disconnect">×</button></span>
     <span class="wpill x1p" id="wallet1Pill"><button type="button" class="wallet x1w" id="wallet1" data-i18n="connectX1">Connect X1 wallet</button><button type="button" class="wx hidden" id="wallet1X" data-i18n-title="disconnect" data-i18n-aria="disconnect">×</button></span>
@@ -285,6 +287,6 @@
   </footer>
 </div>
 <script src="core.js?v=5" defer></script>
-<script src="app.js?v=49" defer></script>
+<script src="app.js?v=50" defer></script>
 </body>
 </html>

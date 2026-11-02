@@ -6,7 +6,7 @@ const PREVIEW = MODE === "mainnet";
 let DEV = false;
 try { DEV = new URLSearchParams(location.search).get("dev") === "1"; } catch {}
 const SEND_LOCKED = PREVIEW && !DEV;
-const PAGE_VERSION = "v49";
+const PAGE_VERSION = "v50";
 
 // ===================== config =====================
 const NETWORKS = {

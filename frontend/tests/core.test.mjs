@@ -509,7 +509,7 @@ test("WP: rendered DOM - 8 sections, DRAFT badge only for EN, PDF link, tables, 
 test("WP: page wiring - visible footer link to #/wp, the view, versions v46 / style v4", () => {
   const html = fs.readFileSync(join(www, "index.html"), "utf8");
   assert.match(html, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/);
-  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=49/); assert.match(html, /style\.css\?v=6/);
+  assert.match(html, /id="viewWp"/); assert.match(html, /app\.js\?v=50/); assert.match(html, /style\.css\?v=7/);
   assert.doesNotMatch(html, /\sstyle=|<style|<script>(?!<\/script>)/, "no inline styles or scripts");
 });
 
@@ -600,7 +600,7 @@ test("v46 footer: row, disclaimer EN/PL, bottom link row hrefs in the ANL order,
   assert.deepEqual(items, ["White Paper", "GitHub", "Security", "Powered by X1", "Part of the ANL Ecosystem", "Telegram", "X"]);
   assert.match(bar, /<a id="wpLink" href="#\/wp" data-i18n="wpLink">/); assert.doesNotMatch(bar, /wpLink"[^>]*hidden/);
   for (const a of bar.match(/<a [^>]*href="https:[^>]*>/g)) if (!/anl-protocol\.com\/"/.test(a)) assert.match(a, /target="_blank" rel="noopener"/, a);
-  assert.match(app, /const PAGE_VERSION = "v49";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
+  assert.match(app, /const PAGE_VERSION = "v50";/); assert.match(app, /t\("foot", NET\.eth\.name, NET\.x1\.name\) \+ " · " \+ PAGE_VERSION/);
   assert.doesNotMatch(foot, /\/srv|\/etc\/|\/home\/|\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/, "no server paths or IPs");
 });
 test("v46: new code without innerHTML/inline styles; i18n keys of the bar and footer in EN and PL", () => {
@@ -646,4 +646,60 @@ test("v48: active VMPX Bridge tab styled like x1watch.xyz (tide pill, dot, arrow
   assert.match(css, /--tide:#58D3C4/i);
   assert.match(app, /ecoNew: "NEW"/); assert.match(app, /ecoNew: "NOWE"/);
   assert.doesNotMatch(html, /style=/);
+});
+
+// ---- v50: common ANL / x1watch design tokens, local Inter + Chakra Petch (latin + latin-ext), no Archivo ----
+test("v50 fonts: local woff2 Inter 400/500/600/700 and Chakra Petch 500/600/700, latin + latin-ext each, swap, sha256 recorded, OFL, no Archivo", async () => {
+  const css = fs.readFileSync(join(www, "style.css"), "utf8"), html = fs.readFileSync(join(www, "index.html"), "utf8");
+  const faces = [...css.matchAll(/@font-face\{([^}]*)\}/g)].map((m) => m[1]);
+  const prop = (f, p) => (f.match(new RegExp(`${p}:([^;]+)`)) || [])[1];
+  const want = [...[400, 500, 600, 700].map((w) => ["Inter", w, "inter"]), ...[500, 600, 700].map((w) => ["Chakra Petch", w, "chakra-petch"])];
+  assert.equal(faces.length, want.length * 2, "one face per family, weight and subset");
+  for (const [fam, w, file] of want) for (const sub of ["latin", "latin-ext"]) {
+    const f = faces.find((x) => prop(x, "font-family") === `"${fam}"` && prop(x, "font-weight") === String(w) && prop(x, "src").includes(`fonts/${file}-${sub}-${w}-normal.woff2`));
+    assert.ok(f, `${fam} ${w} ${sub}`);
+    assert.equal(prop(f, "font-display"), "swap"); assert.equal(prop(f, "font-style"), "normal");
+    const ur = prop(f, "unicode-range");
+    if (sub === "latin") assert.match(ur, /^U\+0000-00FF,/); else assert.match(ur, /^U\+0100-02BA,/, "latin-ext covers ą ć ę ł ń ś ź ż (U+0100-017F)");
+    const buf = fs.readFileSync(join(www, "fonts", `${file}-${sub}-${w}-normal.woff2`));
+    assert.equal(buf.subarray(0, 4).toString("latin1"), "wOF2", "woff2 file");
+  }
+  for (const f of faces) assert.doesNotMatch(prop(f, "src"), /https?:|\/\//, "local files only");
+  assert.doesNotMatch(css + html, /Archivo|archivo/i, "no Archivo left");
+  const files = fs.readdirSync(join(www, "fonts"));
+  assert.ok(!files.some((f) => /archivo/i.test(f)), "Archivo files removed");
+  assert.ok(files.includes("OFL-Inter.txt") && files.includes("OFL-ChakraPetch.txt"), "OFL licences next to the fonts");
+  for (const f of ["OFL-Inter.txt", "OFL-ChakraPetch.txt"]) assert.match(fs.readFileSync(join(www, "fonts", f), "utf8"), /SIL Open Font License, Version 1\.1/);
+  const { createHash } = await import("node:crypto");
+  const sums = fs.readFileSync(join(www, "fonts", "SHA256SUMS"), "utf8").split("\n").filter((l) => /^[0-9a-f]{64}  /.test(l)).map((l) => l.split(/\s+/));
+  const woff = files.filter((f) => f.endsWith(".woff2")).sort();
+  assert.deepEqual(sums.map((s) => s[1]).sort(), woff, "every woff2 has a sha256 line");
+  for (const [h, f] of sums) assert.equal(createHash("sha256").update(fs.readFileSync(join(www, "fonts", f))).digest("hex"), h, f);
+  assert.match(html, /<link rel="preload" href="fonts\/inter-latin-400-normal\.woff2" as="font" type="font\/woff2" crossorigin>/);
+  assert.match(css, /--font:"Inter",/); assert.match(css, /--font-head:"Chakra Petch",/);
+  assert.match(css, /\bh1\{font-family:var\(--font-head\);font-weight:700;font-size:clamp\(2rem,4\.6vw,3\.5rem\);line-height:1\.12/);
+});
+test("v50 tokens: every common token once in :root, no --anl-* copies, --field-edge for fields/toggles, light theme only as tokens, every var() defined", () => {
+  const css = fs.readFileSync(join(www, "style.css"), "utf8");
+  const roots = [...css.matchAll(/^:root\{([^}]*)\}/gm)];
+  assert.equal(roots.length, 1, "one :root block (the 520 px gutter override lives inside a media query)");
+  const names = [...roots[0][1].matchAll(/(--[a-z0-9-]+):/g)].map((m) => m[1]);
+  assert.deepEqual(names.filter((n, i) => names.indexOf(n) !== i), [], "no duplicate tokens");
+  assert.doesNotMatch(css, /--anl-/, "ANL duplicates mapped to the common tokens");
+  for (const [k, v] of Object.entries({ abyss: "#07111F", surface: "#111C2E", deck: "#16233A", frost: "#F8FAFC", mist: "#AAB4C3", tide: "#58D3C4", amber: "#F0B44C", gold: "#FFB11A", alarm: "#FF4D5E", ok: "#30D158", "field-edge": "#66768C" }))
+    assert.ok(new RegExp(`--${k}:${v}`, "i").test(roots[0][1]), `--${k}`);
+  for (const [k, v] of Object.entries({ "r-card": "12px", "r-kpi": "10px", "r-ctl": "8px", "r-chip": "6px", "r-pill": "999px" })) assert.ok(roots[0][1].includes(`--${k}:${v}`), `--${k}`);
+  const light = (css.match(/\[data-theme=light\]\{([^}]*)\}/) || [])[1];
+  assert.ok(light, "light theme tokens");
+  for (const n of [...light.matchAll(/(--[a-z0-9-]+):/g)].map((m) => m[1])) assert.ok(names.includes(n), `light token ${n} exists in :root`);
+  for (const n of new Set([...css.matchAll(/var\((--[a-z0-9-]+)/g)].map((m) => m[1]))) assert.ok(names.includes(n) || n === "--pc", `var(${n}) defined`);
+  for (const sel of ["\\.amount\\{", "input\\.addr\\{", "\\.net\\{", "\\.pager button\\{"]) assert.match(css, new RegExp(sel + "[^}]*border:1px solid var\\(--field-edge\\)"), sel);
+  const hex = css.replace(/@font-face\{[^}]*\}/g, "").replace(/:root\{[^}]*\}/, "").replace(/\[data-theme=light\]\{[^}]*\}/, "").match(/#[0-9a-fA-F]{3,8}\b/g) || [];
+  assert.deepEqual([...new Set(hex)].sort(), ["#000", "#03201c", "#1F6B63", "#36A99C", "#3A4A63"].sort(), "colours only from tokens (except the chart colours shared with stats.js, the v48 badge and the mask)");
+  assert.doesNotMatch(css, /font-variation-settings/, "no Archivo width axes left");
+});
+test("v50: language switch shows PL | EN (ids and behaviour unchanged)", () => {
+  const html = fs.readFileSync(join(www, "index.html"), "utf8");
+  assert.ok(html.indexOf('id="lnPL"') < html.indexOf('id="lnEN"') && html.indexOf('id="lnPL"') > 0);
+  assert.match(html, /<button type="button" id="lnEN" lang="en" aria-pressed="true">EN<\/button>/);
 });
